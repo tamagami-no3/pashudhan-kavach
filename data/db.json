@@ -1,0 +1,297 @@
+{
+  "users": [
+    {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "email": "farmer.pune@pashudhan.gov.in",
+      "full_name": "रामेश बाळासाहेब पाटील (Ramesh Patil)",
+      "role": "farmer",
+      "district": "Pune",
+      "preferred_language": "mr",
+      "phone": "9822099991",
+      "is_active": true,
+      "is_verified": true,
+      "village": "Shirur",
+      "block": "Haveli",
+      "created_at": "2026-08-11T14:13:04.749Z"
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "email": "vet.nashik@pashudhan.gov.in",
+      "full_name": "डॉ. विजय शिंदे (Dr. Vijay Shinde)",
+      "role": "vet",
+      "district": "Nashik",
+      "preferred_language": "mr",
+      "phone": "9822033333",
+      "is_active": true,
+      "is_verified": true,
+      "created_at": "2026-07-12T14:13:04.750Z"
+    },
+    {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "email": "lab.nagpur@pashudhan.gov.in",
+      "full_name": "डॉ. मीरा जोशी (Dr. Meera Joshi)",
+      "role": "lab",
+      "district": "Nagpur",
+      "preferred_language": "en",
+      "phone": "9822077777",
+      "is_active": true,
+      "is_verified": true,
+      "created_at": "2026-06-12T14:13:04.750Z"
+    },
+    {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "email": "admin@pashudhan.gov.in",
+      "full_name": "डॉ. आनंद देशमुख (Dr. Anand Deshmukh)",
+      "role": "admin",
+      "district": "Pune",
+      "preferred_language": "mr",
+      "phone": "9822011111",
+      "is_active": true,
+      "is_verified": true,
+      "created_at": "2026-06-02T14:13:04.750Z"
+    },
+    {
+      "id": "55555555-5555-4555-8555-555555555555",
+      "email": "farmer.nashik@pashudhan.gov.in",
+      "full_name": "ज्ञानेश्वर जाधव (Dnyaneshwar Jadhav)",
+      "role": "farmer",
+      "district": "Nashik",
+      "preferred_language": "mr",
+      "phone": "9822099992",
+      "is_active": true,
+      "is_verified": true,
+      "village": "Dindori",
+      "block": "Niphad",
+      "created_at": "2026-08-01T14:13:04.750Z"
+    }
+  ],
+  "animals": [
+    {
+      "id": "anim-101",
+      "owner_id": "11111111-1111-4111-8111-111111111111",
+      "tag_uid": "100011112222",
+      "species": "Cattle",
+      "breed": "Gir Cow (गीर गाय)",
+      "sex": "Female",
+      "dob": "2022-04-15",
+      "gps_lat": 18.52,
+      "gps_lng": 73.85,
+      "village": "Shirur",
+      "district": "Pune",
+      "health_status": "healthy",
+      "qr_code_url": "",
+      "created_by": "11111111-1111-4111-8111-111111111111",
+      "created_at": "2026-07-12T14:13:04.750Z"
+    },
+    {
+      "id": "anim-102",
+      "owner_id": "11111111-1111-4111-8111-111111111111",
+      "tag_uid": "100011112223",
+      "species": "Buffalo",
+      "breed": "Murrah (मु्र्ऱ्हा म्हैस)",
+      "sex": "Female",
+      "dob": "2021-08-20",
+      "gps_lat": 18.15,
+      "gps_lng": 74.57,
+      "village": "Baramati",
+      "district": "Pune",
+      "health_status": "healthy",
+      "qr_code_url": "",
+      "created_by": "11111111-1111-4111-8111-111111111111",
+      "created_at": "2026-07-22T14:13:04.750Z"
+    },
+    {
+      "id": "anim-103",
+      "owner_id": "11111111-1111-4111-8111-111111111111",
+      "tag_uid": "100011112224",
+      "species": "Goat",
+      "breed": "Osmanabadi (उस्मानाबादी शेळी)",
+      "sex": "Female",
+      "dob": "2023-01-10",
+      "gps_lat": 18.84,
+      "gps_lng": 73.91,
+      "village": "Khed",
+      "district": "Pune",
+      "health_status": "symptomatic",
+      "qr_code_url": "",
+      "created_by": "11111111-1111-4111-8111-111111111111",
+      "created_at": "2026-08-11T14:13:04.750Z"
+    },
+    {
+      "id": "anim-104",
+      "owner_id": "55555555-5555-4555-8555-555555555555",
+      "tag_uid": "100011113332",
+      "species": "Cattle",
+      "breed": "HF Cross (एचएफ क्रॉस)",
+      "sex": "Female",
+      "dob": "2020-05-12",
+      "gps_lat": 19.99,
+      "gps_lng": 73.78,
+      "village": "Dindori",
+      "district": "Nashik",
+      "health_status": "symptomatic",
+      "qr_code_url": "",
+      "created_by": "55555555-5555-4555-8555-555555555555",
+      "created_at": "2026-07-27T14:13:04.750Z"
+    },
+    {
+      "owner_id": "11111111-1111-4111-8111-111111111111",
+      "tag_uid": "789646123654",
+      "species": "Cattle",
+      "breed": "murrah",
+      "sex": "Female",
+      "gps_lat": 18.52,
+      "gps_lng": 73.85,
+      "village": "baramati",
+      "district": "Pune",
+      "health_status": "healthy",
+      "created_by": "11111111-1111-4111-8111-111111111111",
+      "id": "anim-1789049635150",
+      "qr_code_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAARPSURBVO3BMY4kyREAQfdE///LzhUohJSLQvUMj4cwsz9Y678Oaw2HtYbDWsNhreGw1nBYazisNXz4C5XfVHGjMlXcqEwVNypTxaTyRsWk8psqbg5rDYe1hsNaw4eHKr5J5YmKSWWqmComlZuKSWWqmFSmijcqvknlicNaw2Gt4bDW8OEllScqnlB5Q+UJlanipmJSual4QuWJijcOaw2HtYbDWsOHf7mKSWWqmFRuVKaKm4r/J4e1hsNaw2Gt4cP/mYpJZVKZKm5UpoonVP5NDmsNh7WGw1rDh5cqfpPKEyo3FTcqNxU/qeI3HdYaDmsNh7WGDw+p/C9VTCpTxaQyVUwqU8VNxaQyVUwqU8WNyv/SYa3hsNZwWGv48BcV/2QVNxU3FZPKGypPVPyTHNYaDmsNh7WGD3+hMlVMKt9UMVXcqEwVNypTxRMqNxWTyo3KN1W8cVhrOKw1HNYaPnxZxRsqNxVTxY3KjcpNxaRyo/KTKp5QmSpuDmsNh7WGw1qD/cEXqdxUTCrfVDGpTBU3Kk9U3KhMFU+oTBU/6bDWcFhrOKw1fHhI5aZiUrmpmFTeUHmj4g2Vb6qYVKaKSWWqeOKw1nBYazisNXz4MpUblZuKJ1S+SeWJipuKn6QyVbxxWGs4rDUc1hrsD36RylQxqUwVk8pU8YTKVPFNKj+p4gmVqeLmsNZwWGs4rDXYH1yo3FTcqEwVk8pNxY3KT6qYVKaKG5Wp4kZlqphUbireOKw1HNYaDmsN9gcPqDxR8YTKTcWNylQxqUwVk8pUcaPyRsWNylRxozJVPHFYazisNRzWGuwPvkjlpmJSmSomlZuKSeWmYlJ5o+KbVKaKSeWm4o3DWsNhreGw1vDhL1RuKt6omFSmikllUnmjYlKZKm5UfpLKVDGp3KhMFTeHtYbDWsNhreHDQxXfpDJVvFExqbyhMlVMFU+o/KaKJw5rDYe1hsNaw4eXVJ5QmSpuVKaKSWVSmSpuVKaKSeUJlScqblRuKiaVqeKJw1rDYa3hsNZgf3ChMlXcqNxUTCo3FU+o3FS8oTJVTCo/qWJSeaLi5rDWcFhrOKw12B/8g6lMFZPKVDGpPFHxTSpTxRMq31Rxc1hrOKw1HNYaPvyFym+qmComlanim1R+k8pU8UbFG4e1hsNaw2Gt4cNDFd+kcqMyVUwqb1RMKlPFjcpUMancVDxRcaMyVTxxWGs4rDUc1ho+vKTyRMUbKlPFpHJTMalMFZPKTcUTKt+k8k2HtYbDWsNhreHDv1zFTcUbKlPFTcUbKk+oTBU3h7WGw1rDYa3hw79MxaQyVUwqNxU3KpPKjcpvqnjisNZwWGs4rDV8eKniJ1XcqNxUPFExqUwVU8WNyk3FjcpNxaTyxmGt4bDWcFhr+PCQym9SeUNlqrhRmSomlaliUpkqfpLKVPHGYa3hsNZwWGuwP1jrvw5rDYe1hsNaw2Gt4bDWcFhrOKw1/AfG/SkgWFSXcwAAAABJRU5ErkJggg==",
+      "created_at": "2026-09-10T14:13:55.150Z"
+    }
+  ],
+  "symptom_reports": [
+    {
+      "id": "rep-201",
+      "animal_id": "anim-103",
+      "reported_by": "11111111-1111-4111-8111-111111111111",
+      "symptoms": [
+        "fever_high",
+        "drooling",
+        "mouth_blisters",
+        "hoof_blisters",
+        "lameness"
+      ],
+      "media_urls": [],
+      "gps_lat": 18.84,
+      "gps_lng": 73.91,
+      "status": "escalated",
+      "reported_at": "2026-09-08T14:13:04.750Z",
+      "created_at": "2026-09-08T14:13:04.750Z"
+    },
+    {
+      "id": "rep-202",
+      "animal_id": "anim-104",
+      "reported_by": "55555555-5555-4555-8555-555555555555",
+      "symptoms": [
+        "fever_high",
+        "nodular_skin_lesions",
+        "swollen_lymph_nodes",
+        "leg_edema"
+      ],
+      "media_urls": [],
+      "gps_lat": 19.99,
+      "gps_lng": 73.78,
+      "status": "triaged",
+      "reported_at": "2026-09-06T14:13:04.750Z",
+      "created_at": "2026-09-06T14:13:04.750Z"
+    }
+  ],
+  "outbreak_flags": [
+    {
+      "id": "flag-301",
+      "symptom_report_id": "rep-201",
+      "predicted_disease": "Foot and Mouth Disease (FMD)",
+      "confidence_pct": 71.4,
+      "severity_score": 72.5,
+      "risk_level": "high",
+      "district": "Pune",
+      "created_at": "2026-09-08T14:13:04.750Z"
+    },
+    {
+      "id": "flag-302",
+      "symptom_report_id": "rep-202",
+      "predicted_disease": "Lumpy Skin Disease (LSD)",
+      "confidence_pct": 100,
+      "severity_score": 85,
+      "risk_level": "high",
+      "district": "Nashik",
+      "created_at": "2026-09-06T14:13:04.750Z"
+    }
+  ],
+  "lab_cases": [
+    {
+      "id": "lab-401",
+      "symptom_report_id": "rep-201",
+      "sample_id": "LAB-20260908-0101",
+      "assigned_lab_id": "33333333-3333-4333-8333-333333333333",
+      "status": "testing",
+      "result": null,
+      "status_history": [
+        {
+          "status": "collected",
+          "updated_at": "2026-09-08T14:13:04.750Z"
+        }
+      ],
+      "created_at": "2026-09-08T14:13:04.750Z"
+    },
+    {
+      "id": "lab-402",
+      "symptom_report_id": "rep-202",
+      "sample_id": "LAB-20260908-0202",
+      "assigned_lab_id": "33333333-3333-4333-8333-333333333333",
+      "status": "completed",
+      "result": "Positive for Capripoxvirus (LSDV) by RT-PCR",
+      "status_history": [
+        {
+          "status": "completed",
+          "updated_at": "2026-09-09T14:13:04.750Z"
+        }
+      ],
+      "completed_at": "2026-09-09T14:13:04.750Z",
+      "created_at": "2026-09-06T14:13:04.750Z"
+    }
+  ],
+  "health_records": [
+    {
+      "id": "hr-501",
+      "animal_id": "anim-101",
+      "record_type": "vaccination",
+      "description": "FMD Bi-Annual Booster (Raksha Ovac)",
+      "performed_by": "22222222-2222-4222-8222-222222222222",
+      "performed_at": "2026-05-13T14:13:04.750Z",
+      "next_due_at": "2026-09-14T14:13:04.750Z",
+      "created_at": "2026-05-13T14:13:04.750Z"
+    },
+    {
+      "id": "hr-502",
+      "animal_id": "anim-102",
+      "record_type": "vaccination",
+      "description": "Black Quarter (BQ) Vaccine Dose",
+      "performed_by": "22222222-2222-4222-8222-222222222222",
+      "performed_at": "2026-04-13T14:13:04.750Z",
+      "next_due_at": "2026-09-16T14:13:04.750Z",
+      "created_at": "2026-04-13T14:13:04.750Z"
+    }
+  ],
+  "community_posts": [
+    {
+      "id": "post-601",
+      "district": "Pune",
+      "summary": "इशारा: शिरूर व खेड तालुक्यात एफएमडी (लाळ्या खुरकूत) चा प्रादुर्भाव आढळला आहे. बाधित जनावरांना वेगळे ठेवा व जंतूनाशक फवारणी करा.",
+      "summary_en": "Warning: FMD (Foot & Mouth Disease) outbreak detected in Shirur and Khed talukas. Isolate affected animals and apply disinfectant spray immediately.",
+      "summary_hi": "चेतावनी: शिरूर और खेड तालुकों में एफएमडी (खुरपका-मुंहपका रोग) का प्रकोप पाया गया है। प्रभावित पशुओं को अलग रखें और कीटाणुनाशक छिड़काव करें।",
+      "summary_mr": "इशारा: शिरूर व खेड तालुक्यात एफएमडी (लाळ्या खुरकूत) चा प्रादुर्भाव आढळला आहे. बाधित जनावरांना वेगळे ठेवा व जंतूनाशक फवारणी करा.",
+      "created_at": "2026-09-08T14:13:04.750Z"
+    },
+    {
+      "id": "post-602",
+      "district": "Nashik",
+      "summary": "सावधान: दिंडोरी भागात लंपी स्कीन (LSD) चे रुग्ण आढळले आहेत. डास व माशांचे नियंत्रण करा व त्वरित लसीकरण पूर्ण करून घ्या.",
+      "summary_en": "Caution: Lumpy Skin Disease (LSD) cases detected in Dindori area. Control mosquitoes and flies, and complete vaccination immediately.",
+      "summary_hi": "सावधान: दिंडोरी क्षेत्र में लंपी स्किन डिजीज (LSD) के मामले पाए गए हैं। मच्छरों और मक्खियों को नियंत्रित करें और तुरंत टीकाकरण पूरा करवाएं।",
+      "summary_mr": "सावधान: दिंडोरी भागात लंपी स्कीन (LSD) चे रुग्ण आढळले आहेत. डास व माशांचे नियंत्रण करा व त्वरित लसीकरण पूर्ण करून घ्या.",
+      "created_at": "2026-09-06T14:13:04.750Z"
+    },
+    {
+      "id": "post-603",
+      "district": "Chhatrapati Sambhajinagar",
+      "summary": "इर्मजन्सी अलर्ट: पैठण तालुक्यात अँथ्रॅक्स संशयित मृत्यूची नोंद. मृत जनावराची उघड्यावर विल्हेवाट लावू नका व संपर्क टाळा.",
+      "summary_en": "Emergency Alert: Suspected Anthrax death reported in Paithan taluka. Do not dispose of the carcass in the open and avoid contact.",
+      "summary_hi": "आपातकालीन अलर्ट: पैठण तालुके में एंथ्रेक्स से संदिग्ध मृत्यु की सूचना। मृत पशु को खुले में न फेंकें और संपर्क से बचें।",
+      "summary_mr": "इर्मजन्सी अलर्ट: पैठण तालुक्यात अँथ्रॅक्स संशयित मृत्यूची नोंद. मृत जनावराची उघड्यावर विल्हेवाट लावू नका व संपर्क टाळा.",
+      "created_at": "2026-09-05T14:13:04.750Z"
+    }
+  ]
+}

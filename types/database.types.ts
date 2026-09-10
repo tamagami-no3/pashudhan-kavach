@@ -27,6 +27,7 @@ export interface Database {
           role: UserRole;
           preferred_language: PreferredLanguage;
           district: string;
+          village?: string;
           is_active: boolean;
           is_verified: boolean;
           created_at: string;
@@ -40,6 +41,7 @@ export interface Database {
           role?: UserRole;
           preferred_language?: PreferredLanguage;
           district: string;
+          village?: string;
           is_active?: boolean;
           is_verified?: boolean;
           created_at?: string;
@@ -53,6 +55,7 @@ export interface Database {
           role?: UserRole;
           preferred_language?: PreferredLanguage;
           district?: string;
+          village?: string;
           is_active?: boolean;
           is_verified?: boolean;
           created_at?: string;
