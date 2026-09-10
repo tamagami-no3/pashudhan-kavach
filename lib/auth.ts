@@ -32,6 +32,7 @@ const DEMO_USERS: Record<string, UserProfile> = {
     is_active: true,
     is_verified: true,
     created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
   },
   '22222222-2222-4222-8222-222222222222': {
     id: '22222222-2222-4222-8222-222222222222',
@@ -44,6 +45,7 @@ const DEMO_USERS: Record<string, UserProfile> = {
     is_active: true,
     is_verified: true,
     created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
   },
   '33333333-3333-4333-8333-333333333333': {
     id: '33333333-3333-4333-8333-333333333333',
@@ -56,6 +58,7 @@ const DEMO_USERS: Record<string, UserProfile> = {
     is_active: true,
     is_verified: true,
     created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
   },
   '44444444-4444-4444-8444-444444444444': {
     id: '44444444-4444-4444-8444-444444444444',
@@ -68,6 +71,7 @@ const DEMO_USERS: Record<string, UserProfile> = {
     is_active: true,
     is_verified: true,
     created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
   },
 };
 
