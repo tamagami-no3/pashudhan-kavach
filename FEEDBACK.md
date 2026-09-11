@@ -12,10 +12,12 @@ _(unresolved items go here, newest at top)_
   `.env.local` has placeholder keys — fill in `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`
   to activate real DB mode.
 
-- [ ] **Live Gemini API for chatbot**: Chatbot (`Ask Vet Assistant`) currently uses a local
-  rule-based intent engine + offline knowledge base (`lib/services/vetSearchEngine.ts` and
-  `lib/services/chatbotPlaceholder.ts`). To upgrade to live Gemini generative AI, add
-  `GEMINI_API_KEY` to `.env.local` and wire it in `lib/services/chatbotPlaceholder.ts`.
+- [ ] **Chatbot removed** ✅ (2026-09-11): The floating "Ask Vet Assistant" widget
+  (`components/ChatbotWindow.tsx`), its API routes (`/api/chatbot/*`),
+  `lib/services/chatbotPlaceholder.ts`, `lib/services/vetSearchEngine.ts`,
+  `lib/chatbot-session-store.ts`, and `CHATBOT_INTEGRATION.md` were removed as
+  out-of-scope of the locked build spec (sections 1–9). Disease triage via
+  `lib/services/triageEngine.ts` and lab notifications remain.
 
 - [ ] **SMS / WhatsApp notifications**: `lib/services/notify.ts` logs notifications in-app
   and simulates SMS. Wire Twilio/Gupshup credentials in `.env.local` to send real alerts.

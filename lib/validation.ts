@@ -97,18 +97,6 @@ export const CreateAdvisorySchema = z.object({
   severity: RiskLevelSchema.optional().default('medium'),
 });
 
-// Chatbot Schemas
-export const CreateChatbotSessionSchema = z.object({
-  title: z.string().optional().default('New Consultation'),
-  channel: z.string().optional().default('inapp'),
-});
-
-export const SendChatMessageSchema = z.object({
-  message: z.string().min(1, 'Message cannot be empty'),
-  mode: z.enum(['chat', 'predictor', 'scanner', 'search']).optional().default('chat'),
-  context_animal_id: z.string().optional().nullable(),
-});
-
 // Symptoms Catalog & Diagnostic Definitions
 export type DiagnosticSymptom =
   | 'fever_high'

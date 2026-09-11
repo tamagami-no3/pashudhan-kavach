@@ -480,34 +480,6 @@ async function runSeed() {
     });
   }
 
-  // 5. Seed Sample Chatbot Session & Messages
-  console.log('💬 Seeding sample chatbot session...');
-  const { data: session } = await supabase
-    .from('chatbot_sessions')
-    .insert({
-      user_id: farmerPuneId,
-      channel: 'inapp',
-    })
-    .select('id')
-    .single();
-
-  if (session) {
-    await supabase.from('chatbot_messages').insert([
-      {
-        session_id: session.id,
-        sender: 'user',
-        message: 'What are the symptoms of FMD in cattle?',
-      },
-      {
-        session_id: session.id,
-        sender: 'bot',
-        message:
-          'High fever (39.4-41°C), excessive drooling/salivation, blisters on mouth, hooves, and teats, sudden drop in milk yield, and lameness. Isolate the animal and contact your local vet immediately.',
-        intent_matched: 'symptoms_fmd',
-      },
-    ]);
-  }
-
   console.log('✅ Seed completed successfully! Synthetic datasets populated across Maharashtra districts.');
 }
 

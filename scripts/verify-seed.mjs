@@ -7,7 +7,7 @@ const env = Object.fromEntries(
 );
 const url = env.NEXT_PUBLIC_SUPABASE_URL;
 const key = env.SUPABASE_SERVICE_ROLE_KEY;
-const tables = ['users','farmers','animals','symptom_reports','outbreak_flags','lab_cases','health_records','advisories','community_posts','notification_log','chatbot_sessions','chatbot_messages'];
+const tables = ['users','farmers','animals','symptom_reports','outbreak_flags','lab_cases','health_records','advisories','community_posts','notification_log'];
 for (const t of tables) {
   const res = await fetch(`${url}/rest/v1/${t}?select=*&limit=1000`, {
     headers: { apikey: key, Authorization: `Bearer ${key}` },

@@ -73,17 +73,12 @@ All demo accounts share the password: `DemoPassword123!`
 
 ---
 
-### Step 6: Veterinary Assistant Chatbot Window (1 min)
-1. Look at the bottom-right corner of any page and click **Ask Vet Assistant**.
-2. Click one of the quick suggestions or type:
-   - `"What are the symptoms of LSD?"`
-   - `"When is the next vaccination due for my animal?"`
-   - Or test Marathi/Hindi: `"एफएमडी ची लक्षणे काय आहेत?"`
-3. Observe the immediate trilingual response from the isolated connector engine.
+#### Removed Feature Note
+> The floating **"Ask Vet Assistant"** chatbot widget was removed from this build (out-of-scope of the locked MASTER_BUILD_PROMPT sections 1–9; the spec'd disease-triage engine continues to power symptom reports and lab notifications instead).
 
 ---
 
-### Step 7: State Administrator Analytics & CSV Export (1 min)
+### Step 6: State Administrator Analytics & CSV Export (1 min)
 1. Sign in as **👑 State Admin** (`admin@pashudhan.gov.in`).
 2. Navigate to `/analytics`:
    - Inspect state-level totals: Registered livestock, outbreak flags, lab cases, and pathogen distributions.
