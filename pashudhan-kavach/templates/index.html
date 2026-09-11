@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ t.app_title }} - {{ t.app_tagline }}</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            },
+            saffron: {
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- TOP APP HEADER -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-emerald-500 to-amber-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+          <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2" id="ui-app-title">
+              {{ t.app_title }}
+              <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 font-semibold">AI Edge</span>
+            </h1>
+            <span class="text-xs px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700 font-mono hidden md:inline" id="ui-badge-trilingual">
+              {{ t.badge_trilingual }}
+            </span>
+          </div>
+          <p class="text-xs text-slate-400" id="ui-app-tagline">{{ t.app_tagline }}</p>
+        </div>
+      </div>
+
+      <!-- Quick Preset Buttons & Language Switcher -->
+      <div class="flex items-center gap-3">
+        <!-- Language Switcher Pill -->
+        <div class="flex items-center bg-slate-800/90 rounded-lg p-1 border border-slate-700 shadow-inner">
+          <button onclick="setLanguage('en')" id="lang-btn-en" class="px-2.5 py-1 text-xs font-semibold rounded-md transition-colors text-white bg-brand-600">EN</button>
+          <button onclick="setLanguage('hi')" id="lang-btn-hi" class="px-2.5 py-1 text-xs font-semibold rounded-md transition-colors text-slate-400 hover:text-white">हिंदी</button>
+          <button onclick="setLanguage('mr')" id="lang-btn-mr" class="px-2.5 py-1 text-xs font-semibold rounded-md transition-colors text-slate-400 hover:text-white">मराठी</button>
+        </div>
+
+        <!-- Master Run Button -->
+        <button onclick="runFullPipeline()" class="px-4 py-2 bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 text-white text-xs font-bold rounded-lg shadow-lg shadow-brand-600/30 flex items-center gap-2 transition-transform active:scale-95">
+          <i class="fa-solid fa-bolt text-amber-300"></i>
+          <span id="ui-btn-run-full">{{ t.btn_run_full }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PRESET DEMO SCENARIOS BAR -->
+    <div class="bg-slate-900/90 border-t border-slate-800/60 px-4 py-1.5 overflow-x-auto">
+      <div class="max-w-7xl mx-auto flex items-center gap-2 text-xs">
+        <span class="text-slate-400 font-medium whitespace-nowrap flex items-center gap-1" id="ui-preset-title">
+          <i class="fa-solid fa-flask text-brand-400"></i> Quick Scenarios:
+        </span>
+        <button onclick="loadScenario('lsd')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 whitespace-nowrap transition-colors flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span id="preset-lbl-lsd">{{ t.preset_lsd }}</span>
+        </button>
+        <button onclick="loadScenario('fmd')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-red-300 border border-red-500/30 whitespace-nowrap transition-colors flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+          <span id="preset-lbl-fmd">{{ t.preset_fmd }}</span>
+        </button>
+        <button onclick="loadScenario('healthy')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 whitespace-nowrap transition-colors flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="preset-lbl-healthy">{{ t.preset_healthy }}</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- TOP GRID: VISION ENGINE & CLINICAL RAG -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- VISION ENGINE -->
+      <section class="lg:col-span-6 bg-slate-800/60 backdrop-blur rounded-2xl border border-slate-700/70 p-5 shadow-xl flex flex-col justify-between">
+        <div>
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold border border-emerald-500/30">
+                  <i class="fa-solid fa-camera"></i>
+                </span>
+                <h2 class="text-base font-bold text-white tracking-wide" id="ui-vision-title">{{ t.vision_title }}</h2>
+              </div>
+              <p class="text-xs text-slate-400 mt-1" id="ui-vision-subtitle">{{ t.vision_subtitle }}</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-brand-500/20 text-brand-400 font-mono border border-brand-500/30">MobileNetV3 Edge PyTorch</span>
+          </div>
+
+          <!-- Camera & Viewfinder Container -->
+          <div class="relative bg-slate-950 rounded-xl border border-slate-700/80 overflow-hidden shadow-inner aspect-[4/3] flex items-center justify-center group">
+            <!-- Video for Webcam Stream -->
+            <video id="webcam-video" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+            
+            <!-- Snapshot / Image Preview -->
+            <img id="image-preview" src="/static/samples/lsd_sample.jpg" alt="Pathology Preview" class="w-full h-full object-cover">
+            
+            <!-- Offscreen Canvas for Snapshot Capture -->
+            <canvas id="capture-canvas" class="hidden"></canvas>
+
+            <!-- Status Overlay -->
+            <div id="vision-loader" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 hidden">
+              <i class="fa-solid fa-circle-notch fa-spin text-brand-400 text-3xl"></i>
+              <span class="text-xs text-slate-300 font-mono" id="ui-analyzing-image">{{ t.analyzing_image }}</span>
+            </div>
+
+            <!-- Active Stream Badge -->
+            <div id="cam-active-badge" class="absolute top-2 left-2 px-2 py-0.5 rounded bg-red-600/80 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 hidden">
+              <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span> Live Webcam
+            </div>
+          </div>
+
+          <!-- Webcam & Upload Controls -->
+          <div class="grid grid-cols-3 gap-2 mt-3">
+            <button id="btn-toggle-cam" onclick="toggleWebcam()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-lg border border-slate-600 flex items-center justify-center gap-1.5 transition-colors">
+              <i class="fa-solid fa-camera"></i>
+              <span id="ui-btn-start-cam">{{ t.btn_start_cam }}</span>
+            </button>
+
+            <button id="btn-capture-frame" onclick="captureWebcamFrame()" disabled class="px-3 py-2 bg-brand-700 hover:bg-brand-600 disabled:opacity-50 text-white text-xs font-semibold rounded-lg border border-brand-600 flex items-center justify-center gap-1.5 transition-colors">
+              <i class="fa-solid fa-crosshairs"></i>
+              <span id="ui-btn-capture">{{ t.btn_capture }}</span>
+            </button>
+
+            <label class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-lg border border-slate-600 flex items-center justify-center gap-1.5 cursor-pointer transition-colors text-center">
+              <i class="fa-solid fa-arrow-up-from-bracket"></i>
+              <span id="ui-btn-upload">{{ t.btn_upload }}</span>
+              <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+            </label>
+          </div>
+        </div>
+
+        <!-- Vision Diagnostics Output Card -->
+        <div id="vision-results" class="mt-4 pt-3 border-t border-slate-700/60 space-y-3">
+          <!-- Pathology Badge & Confidence -->
+          <div class="flex items-center justify-between bg-slate-900/80 p-3 rounded-xl border border-slate-700/80">
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block" id="ui-detected-pathology">{{ t.detected_pathology }}</span>
+              <h3 class="text-sm font-bold text-amber-300" id="res-disease-name">Lumpy Skin Disease (LSD)</h3>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30" id="res-danger-level">High Contagious</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block" id="ui-confidence-score">{{ t.confidence_score }}</span>
+              <div class="text-lg font-black text-brand-400 font-mono" id="res-confidence">91.0%</div>
+            </div>
+          </div>
+
+          <!-- MobileNet Class Probability Distribution -->
+          <div class="space-y-1.5 text-xs">
+            <div class="flex justify-between text-slate-400 text-[11px]">
+              <span>Class Distribution (Softmax)</span>
+              <span class="font-mono text-slate-500">MobileNetV3 Edge</span>
+            </div>
+            <div class="grid grid-cols-5 gap-1 text-[10px] font-mono text-center">
+              <div class="bg-slate-900 p-1 rounded border border-slate-700">
+                <span class="text-slate-400 block">LSD</span>
+                <span id="prob-lsd" class="font-bold text-amber-400">91.0%</span>
+              </div>
+              <div class="bg-slate-900 p-1 rounded border border-slate-700">
+                <span class="text-slate-400 block">FMD</span>
+                <span id="prob-fmd" class="font-bold text-slate-400">4.0%</span>
+              </div>
+              <div class="bg-slate-900 p-1 rounded border border-slate-700">
+                <span class="text-slate-400 block">PPR</span>
+                <span id="prob-ppr" class="font-bold text-slate-400">2.0%</span>
+              </div>
+              <div class="bg-slate-900 p-1 rounded border border-slate-700">
+                <span class="text-slate-400 block">HS</span>
+                <span id="prob-hs" class="font-bold text-slate-400">2.0%</span>
+              </div>
+              <div class="bg-slate-900 p-1 rounded border border-slate-700">
+                <span class="text-slate-400 block">Norm</span>
+                <span id="prob-healthy" class="font-bold text-slate-400">1.0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 576-dim Tensor Metadata -->
+          <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800 text-[11px] font-mono flex items-center justify-between text-slate-400">
+            <div>
+              <span class="text-brand-400 font-bold"><i class="fa-solid fa-microchip mr-1"></i> Tensors:</span>
+              <span id="res-tensor-shape">[1, 3, 224, 224]</span> &bull; 576-dim
+            </div>
+            <div id="res-tensor-channels" class="text-slate-500">Ch_142:1.42, Ch_289:1.18</div>
+          </div>
+
+          <!-- Symptom Tag Pills -->
+          <div class="space-y-1">
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider block" id="ui-symptom-tags">{{ t.symptom_tags }}</span>
+            <div id="res-symptom-tags" class="flex flex-wrap gap-1.5">
+              <span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-200 text-[11px] border border-slate-600">Firm cutaneous nodules</span>
+              <span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-200 text-[11px] border border-slate-600">Circumscribed dermal eruptions</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CLINICAL RAG ADVISORY -->
+      <section class="lg:col-span-6 bg-slate-800/60 backdrop-blur rounded-2xl border border-slate-700/70 p-5 shadow-xl flex flex-col justify-between">
+        <div>
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold border border-blue-500/30">
+                  <i class="fa-solid fa-book-medical"></i>
+                </span>
+                <h2 class="text-base font-bold text-white tracking-wide" id="ui-rag-title">{{ t.rag_title }}</h2>
+              </div>
+              <p class="text-xs text-slate-400 mt-1" id="ui-rag-subtitle">{{ t.rag_subtitle }}</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-mono border border-blue-500/30">TF-IDF Vector RAG</span>
+          </div>
+
+          <!-- Text Query Input Box with Quick Chips -->
+          <div class="space-y-2">
+            <div class="relative">
+              <textarea id="rag-query-input" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="{{ t.query_placeholder }}">Multiple raised circular skin lumps on cow body, high fever for 5 days, swollen neck glands</textarea>
+              <button id="btn-retrieve-rag" onclick="executeRAG()" class="absolute bottom-2.5 right-2.5 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow flex items-center gap-1.5 transition-colors">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span id="ui-btn-retrieve-rag">{{ t.btn_retrieve_rag }}</span>
+              </button>
+            </div>
+
+            <!-- Quick symptom chips -->
+            <div class="flex flex-wrap gap-1.5 text-[11px]">
+              <span class="text-slate-400 text-xs flex items-center mr-1">Quick Add:</span>
+              <button onclick="addQueryChip('mouth vesicles drooling')" class="px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 border border-slate-600">+ Mouth Blisters</button>
+              <button onclick="addQueryChip('firm skin nodules')" class="px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 border border-slate-600">+ Skin Lumps</button>
+              <button onclick="addQueryChip('throat swelling respiratory distress')" class="px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 border border-slate-600">+ Throat Edema</button>
+              <button onclick="addQueryChip('ocular nasal discharge')" class="px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 border border-slate-600">+ Eye/Nose Discharge</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RAG Clinical Guidelines Tabs -->
+        <div class="mt-4 pt-3 border-t border-slate-700/60">
+          <div class="flex items-center justify-between mb-2">
+            <!-- Tabs -->
+            <div class="flex space-x-2 border-b border-slate-700">
+              <button onclick="switchRagTab('quarantine')" id="tab-btn-quarantine" class="px-3 py-1.5 text-xs font-bold text-blue-400 border-b-2 border-blue-500 flex items-center gap-1.5">
+                <i class="fa-solid fa-ban"></i>
+                <span id="ui-tab-quarantine">{{ t.tab_quarantine }}</span>
+              </button>
+              <button onclick="switchRagTab('chemical')" id="tab-btn-chemical" class="px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5">
+                <i class="fa-solid fa-flask-vial"></i>
+                <span id="ui-tab-chemical">{{ t.tab_chemical }}</span>
+              </button>
+              <button onclick="switchRagTab('diet')" id="tab-btn-diet" class="px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5">
+                <i class="fa-solid fa-wheat-awn"></i>
+                <span id="ui-tab-diet">{{ t.tab_diet }}</span>
+              </button>
+            </div>
+
+            <!-- Cosine Score Badge -->
+            <div class="text-[11px] font-mono text-slate-400 flex items-center gap-1 bg-slate-900 px-2 py-1 rounded border border-slate-700">
+              <i class="fa-solid fa-bullseye text-blue-400"></i>
+              <span id="ui-similarity-score">{{ t.similarity_score }}</span>:
+              <strong id="rag-match-score" class="text-blue-400">92.4%</strong>
+            </div>
+          </div>
+
+          <!-- Tab Contents (Formatted without numbers) -->
+          <div class="bg-slate-900/90 rounded-xl border border-slate-700/80 p-4 min-h-[170px]">
+            <!-- Quarantine Pane -->
+            <div id="pane-quarantine" class="space-y-2">
+              <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-triangle-exclamation"></i> Mandatory Quarantine Protocol
+              </h4>
+              <p id="rag-quarantine-text" class="text-xs text-slate-200 leading-relaxed whitespace-pre-line">
+                • Isolate infected cattle in a fly-netted and mosquito-shielded enclosure.
+                • Institute strict vector control by clearing stagnant water and spraying cattle sheds with safe insect repellents.
+                • Enforce strict herd isolation while monitoring healthy cattle daily for nodule eruption.
+              </p>
+            </div>
+
+            <!-- Chemical Wash Pane -->
+            <div id="pane-chemical" class="space-y-2 hidden">
+              <h4 class="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-pump-medical"></i> Chemical Wash & Disinfection (Potassium Permanganate)
+              </h4>
+              <p id="rag-chemical-text" class="text-xs text-slate-200 leading-relaxed whitespace-pre-line">
+                • Wound & Nodule Care: Clean ruptured nodules with mild Potassium Permanganate or Povidone-Iodine solution.
+                • Fly repellent: Apply herbal paste of neem oil, pure turmeric powder, and camphor to open lumps to prevent maggots.
+                • Barn Disinfection: Disinfect grounds and sheds with eco-friendly viral disinfectant or slaked lime.
+              </p>
+            </div>
+
+            <!-- Dietary Care Pane -->
+            <div id="pane-diet" class="space-y-2 hidden">
+              <h4 class="text-xs font-bold text-teal-300 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-bowl-food"></i> Dietary & Supportive Nutrition
+              </h4>
+              <p id="rag-diet-text" class="text-xs text-slate-200 leading-relaxed whitespace-pre-line">
+                • Provide energy-dense soft mash with crushed grains, wheat bran, and mineral mixture containing Zinc and Selenium.
+                • Add natural immunity boosters such as turmeric, black pepper, tulsi, and jaggery paste fed twice daily.
+                • Ensure continuous access to fresh clean water with electrolytes to offset fever dehydration.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- CHATBOT ASSISTANT SECTION: CONTINUOUS CONVERSATIONAL AI -->
+    <section class="bg-gradient-to-br from-slate-900 via-slate-800/80 to-slate-900 rounded-2xl border border-emerald-500/40 p-5 shadow-2xl relative overflow-hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/80 pb-3 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-lg shadow-inner">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-bold text-white tracking-wide" id="ui-chatbot-title">{{ t.chatbot_title }}</h2>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live & Continuous
+              </span>
+            </div>
+            <p class="text-xs text-slate-400" id="ui-chatbot-subtitle">{{ t.chatbot_subtitle }}</p>
+          </div>
+        </div>
+
+        <!-- Quick Question Chips -->
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+          <span class="text-slate-400 text-[11px] mr-1">Quick Questions:</span>
+          <button onclick="askChatbotQuestion('माझ्या गाईच्या अंगावर गाठी आहेत काय करू?')" class="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-[11px] transition-colors">अंगावर गाठी काय करू?</button>
+          <button onclick="askChatbotQuestion('तोंडातील फोडांवर कोणता लेप लावावा?')" class="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-red-300 border border-red-500/30 text-[11px] transition-colors">तोंडातील फोडांवर लेप?</button>
+          <button onclick="askChatbotQuestion('Is Paracetamol or Meloxicam safe?')" class="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 text-[11px] transition-colors">Safe Painkillers?</button>
+        </div>
+      </div>
+
+      <!-- Chat Messages Scroll Container -->
+      <div id="chat-messages" class="space-y-3 max-h-64 overflow-y-auto pr-2 mb-4 scroll-smooth">
+        <!-- Initial Welcome Bubble -->
+        <div class="flex items-start gap-2.5">
+          <div class="w-7 h-7 rounded-full bg-emerald-600/30 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+            <i class="fa-solid fa-user-doctor"></i>
+          </div>
+          <div class="bg-slate-800/90 border border-slate-700 rounded-2xl rounded-tl-none p-3 text-xs text-slate-200 leading-relaxed shadow-sm max-w-3xl" id="chat-welcome-msg">
+            {{ t.chatbot_welcome }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input Field & Send Button -->
+      <div class="flex gap-2">
+        <input type="text" id="chat-user-input" onkeydown="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors shadow-inner" placeholder="{{ t.chatbot_placeholder }}">
+        <button onclick="sendChatMessage()" id="btn-chat-send" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all active:scale-95 whitespace-nowrap">
+          <i class="fa-solid fa-paper-plane text-xs"></i>
+          <span id="ui-chatbot-send">{{ t.chatbot_send }}</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- BOTTOM GRID: MEDICATION SCANNER & GEO-FENCE ALERT -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- MEDICATION SCANNER & RISK CLASSIFIER -->
+      <section class="lg:col-span-5 bg-slate-800/60 backdrop-blur rounded-2xl border border-slate-700/70 p-5 shadow-xl flex flex-col justify-between">
+        <div>
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold border border-purple-500/30">
+                  <i class="fa-solid fa-pills"></i>
+                </span>
+                <h2 class="text-base font-bold text-white tracking-wide" id="ui-med-title">{{ t.med_title }}</h2>
+              </div>
+              <p class="text-xs text-slate-400 mt-1" id="ui-med-subtitle">{{ t.med_subtitle }}</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 font-mono border border-purple-500/30">ML Risk Model</span>
+          </div>
+
+          <!-- Medication Input Form -->
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs text-slate-300 font-medium block mb-1" id="ui-med-input-label">{{ t.med_input_label }}</label>
+              <input type="text" id="med-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors" value="Dexamethasone steroid injection 20ml and used engine oil on lumps" placeholder="{{ t.med_input_placeholder }}">
+            </div>
+
+            <!-- Duration & Critical Indicators Grid -->
+            <div class="grid grid-cols-2 gap-3">
+              <!-- Symptom Duration -->
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80">
+                <div class="flex justify-between items-center mb-1">
+                  <label class="text-[11px] text-slate-300" id="ui-symptom-duration-label">{{ t.symptom_duration_label }}</label>
+                  <span id="duration-val" class="text-xs font-bold text-amber-400 font-mono">5 Days</span>
+                </div>
+                <input type="range" id="duration-slider" min="1" max="10" value="5" oninput="updateDurationLabel(this.value)" class="w-full accent-amber-500 cursor-pointer">
+                <span class="text-[10px] text-red-400 block mt-0.5" id="duration-warning-hint">Persistent symptoms trigger auto-escalation</span>
+              </div>
+
+              <!-- Critical Severity Indicators -->
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80 space-y-1">
+                <span class="text-[11px] text-slate-300 font-medium block mb-1" id="ui-critical-signs-label">{{ t.critical_signs_label }}</span>
+                <label class="flex items-center gap-1.5 text-[10px] text-slate-300 cursor-pointer">
+                  <input type="checkbox" id="sign-hemorrhage" checked class="rounded border-slate-700 text-red-600 focus:ring-0">
+                  <span id="ui-sign-hemorrhage">{{ t.sign_hemorrhage }}</span>
+                </label>
+                <label class="flex items-center gap-1.5 text-[10px] text-slate-300 cursor-pointer">
+                  <input type="checkbox" id="sign-recumbent" class="rounded border-slate-700 text-red-600 focus:ring-0">
+                  <span id="ui-sign-recumbent">{{ t.sign_recumbent }}</span>
+                </label>
+                <label class="flex items-center gap-1.5 text-[10px] text-slate-300 cursor-pointer">
+                  <input type="checkbox" id="sign-asphyxia" class="rounded border-slate-700 text-red-600 focus:ring-0">
+                  <span id="ui-sign-asphyxia">{{ t.sign_asphyxia }}</span>
+                </label>
+              </div>
+            </div>
+
+            <button id="btn-evaluate-med" onclick="evaluateMedicationSafety()" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-lg shadow-md transition-colors flex items-center justify-center gap-2">
+              <i class="fa-solid fa-pills"></i>
+              <span id="ui-btn-evaluate-med">{{ t.btn_evaluate_med }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Risk Assessment Output -->
+        <div id="med-results-card" class="mt-4 pt-3 border-t border-slate-700/60 space-y-3">
+          <!-- Dynamic Override Banner (Prominent Red Alert) -->
+          <div id="heuristic-alert-box" class="p-3 bg-red-950/80 border border-red-600 rounded-xl space-y-1">
+            <div class="flex items-center gap-2 text-red-400 text-xs font-bold">
+              <i class="fa-solid fa-triangle-exclamation animate-bounce"></i>
+              <span id="ui-heuristic-alert-title">{{ t.heuristic_alert_title }}</span>
+            </div>
+            <p id="heuristic-alert-desc" class="text-[11px] text-red-200 leading-normal">
+              Critical Alert: Symptoms have persisted over several days. Prompt veterinary examination is necessary to prevent secondary complications.
+            </p>
+          </div>
+
+          <!-- Risk Level Gauge (Without Numbers) -->
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-700/80 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block" id="ui-risk-level">{{ t.risk_level }}</span>
+              <h3 id="med-risk-badge" class="text-sm font-bold text-red-400">Critical Warning - Restricted & Dangerous Treatment</h3>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block">ML Confidence</span>
+              <span id="med-confidence-val" class="text-base font-bold text-purple-400 font-mono">96.0%</span>
+            </div>
+          </div>
+
+          <!-- Clinical Guidance Notice -->
+          <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800 text-xs text-slate-300" id="med-guidance-text">
+            Cease unauthorized chemical administration immediately. Risk of toxic shock or organ damage. Emergency veterinary consultation advised.
+          </div>
+        </div>
+      </section>
+
+      <!-- AGENTIC GEO-FENCED ALERT & VET DISPATCH -->
+      <section class="lg:col-span-7 bg-slate-800/60 backdrop-blur rounded-2xl border border-slate-700/70 p-5 shadow-xl flex flex-col justify-between">
+        <div>
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-saffron-500/20 text-saffron-500 flex items-center justify-center text-xs font-bold border border-saffron-500/30">
+                  <i class="fa-solid fa-satellite-dish"></i>
+                </span>
+                <h2 class="text-base font-bold text-white tracking-wide" id="ui-geo-title">{{ t.geo_title }}</h2>
+              </div>
+              <p class="text-xs text-slate-400 mt-1" id="ui-geo-subtitle">{{ t.geo_subtitle }}</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-saffron-500/20 text-saffron-400 font-mono border border-saffron-500/30">Haversine GIS Containment</span>
+          </div>
+
+          <!-- Location & Radius Settings Bar -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 mb-3">
+            <div class="sm:col-span-7">
+              <label class="text-[11px] text-slate-300 block mb-1" id="ui-farm-location">{{ t.farm_location }}</label>
+              <div class="flex gap-2">
+                <input type="text" id="gps-coords" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono" value="18.2750, 74.3160" placeholder="Lat, Lon">
+                <button onclick="useCurrentLocation()" class="px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs rounded-lg border border-slate-600 whitespace-nowrap" title="Browser GPS">
+                  <i class="fa-solid fa-location-crosshairs"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="sm:col-span-5">
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-[11px] text-slate-300" id="ui-alert-radius">{{ t.alert_radius }}</label>
+                <span id="radius-val" class="text-xs font-bold text-saffron-500 font-mono">5.0 km</span>
+              </div>
+              <input type="range" id="radius-slider" min="1" max="15" step="0.5" value="5.0" oninput="updateRadius(this.value)" class="w-full accent-saffron-500 cursor-pointer">
+            </div>
+          </div>
+
+          <!-- Interactive GIS Map Container -->
+          <div class="relative rounded-xl border border-slate-700 overflow-hidden shadow-inner h-52 bg-slate-950 z-0">
+            <div id="leaflet-map" class="w-full h-full z-0"></div>
+          </div>
+        </div>
+
+        <!-- Geo Alert Outputs: Veterinary Ticket & Broadcast Payloads -->
+        <div class="mt-4 pt-3 border-t border-slate-700/60 space-y-3">
+          
+          <!-- Automated Veterinary Tracking Ticket (Digital Pass) -->
+          <div class="bg-gradient-to-r from-slate-900 to-slate-950 p-3.5 rounded-xl border border-saffron-500/40 shadow-lg relative overflow-hidden">
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-saffron-500/5 rounded-full blur-xl pointer-events-none"></div>
+            
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-file-shield text-saffron-500"></i>
+                <h4 class="text-xs font-bold text-white uppercase tracking-wider" id="ui-ticket-title">{{ t.ticket_title }}</h4>
+              </div>
+              <span class="text-xs font-mono font-bold text-saffron-400 bg-saffron-500/10 px-2 py-0.5 rounded border border-saffron-500/30" id="ticket-id-val">TICKET-VET-8832A</span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+              <div>
+                <span class="text-slate-400 block text-[10px]" id="ui-ticket-officer">{{ t.ticket_officer }}</span>
+                <span class="text-slate-200 font-medium truncate block" id="ticket-officer-val">Dr. S. Kulkarni (B.V.Sc)</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block text-[10px]" id="ui-ticket-priority">{{ t.ticket_priority }}</span>
+                <span class="text-red-400 font-bold" id="ticket-priority-val">P1 - CRITICAL</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block text-[10px]">Containment Ring</span>
+                <span class="text-amber-400 font-bold" id="ticket-ring-val">5.0 km (7 Farms)</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block text-[10px]" id="ui-ticket-status">{{ t.ticket_status }}</span>
+                <span class="text-emerald-400 font-bold flex items-center gap-1" id="ticket-status-val">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> DISPATCHED
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Broadcast Payloads (SMS & WhatsApp direct link) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <!-- WhatsApp Alert Card -->
+            <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-700/80 flex flex-col justify-between">
+              <div class="space-y-1 mb-2">
+                <span class="text-[10px] font-bold text-emerald-400 flex items-center gap-1 uppercase tracking-wider" id="ui-whatsapp-payload">
+                  <i class="fa-brands fa-whatsapp text-emerald-400 text-xs"></i> {{ t.whatsapp_payload }}
+                </span>
+                <p id="whatsapp-preview-snippet" class="text-[11px] text-slate-300 line-clamp-2 italic">
+                  पशुधन कवच - आपातकालीन संक्रामक रोग चेतावनी...
+                </p>
+              </div>
+              <a id="btn-open-whatsapp" href="https://wa.me/" target="_blank" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span id="ui-btn-send-whatsapp">{{ t.btn_send_whatsapp }}</span>
+              </a>
+            </div>
+
+            <!-- SMS Payload Card -->
+            <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-700/80 flex flex-col justify-between">
+              <div class="space-y-1 mb-2">
+                <span class="text-[10px] font-bold text-blue-400 flex items-center gap-1 uppercase tracking-wider" id="ui-sms-payload">
+                  <i class="fa-solid fa-comment-sms text-blue-400 text-xs"></i> {{ t.sms_payload }}
+                </span>
+                <p id="sms-preview-snippet" class="text-[11px] text-slate-300 line-clamp-2">
+                  [PASHUDHAN KAVACH ALERT] Outbreak confirmed within 5.0 km...
+                </p>
+              </div>
+              <button onclick="copySMSText()" class="w-full py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold rounded-lg border border-slate-600 transition-colors flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-copy text-xs"></i>
+                <span id="ui-btn-copy-sms">{{ t.btn_copy_sms }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Nearby Farmers In Danger Zone Summary -->
+          <div class="text-[11px] text-slate-400 flex items-center justify-between px-1">
+            <span id="ui-nearby-farms-found">Nearby Registered Livestock Owners in Danger Zone:</span>
+            <strong id="nearby-count-val" class="text-saffron-400">7 Herds (128 Livestock)</strong>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800 bg-slate-950 py-4 mt-12 text-center text-xs text-slate-500">
+    <p id="ui-footer-text">{{ t.footer_text }} &bull; Powered by PyTorch, MobileNetV3 & Scikit-Learn</p>
+  </footer>
+
+  <!-- Pass Injected Server Data to JavaScript -->
+  <script>
+    const INITIAL_LANG = "{{ lang }}";
+    const TRANSLATIONS = {{ translations_json | tojson }};
+  </script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
