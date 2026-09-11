@@ -20,14 +20,17 @@ export async function GET(
     return unauthorizedResponse();
   }
 
-  const authCheck = requireRole(user, 'lab', 'vet', 'admin');
+  const authCheck = requireRole(user, 'lab', 'vet');
   if (!authCheck.authorized) {
     return authCheck.errorResponse!;
   }
 
   const { id } = params;
   const allCases = getLabCases();
-  const lc = allCases.find((c) => c.id === id) || allCases[0];
+  const lc = allCases.find((c) => c.id === id);
+  if (!lc) {
+    return errorResponse('Lab case not found', 'NOT_FOUND', 404);
+  }
 
   const allReports = getSymptomReports();
   const allAnimals = getAnimals();
@@ -59,7 +62,8 @@ export async function PATCH(
     return unauthorizedResponse();
   }
 
-  const authCheck = requireRole(user, 'lab', 'admin');
+  // Locked RBAC: lab case status management is exclusive to the lab role.
+  const authCheck = requireRole(user, 'lab');
   if (!authCheck.authorized) {
     return authCheck.errorResponse!;
   }

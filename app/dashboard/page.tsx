@@ -66,7 +66,7 @@ export default function DashboardPage() {
         setSymptomReports(d.data || []);
       }
 
-      if (['lab', 'admin', 'vet'].includes(user?.role || '')) {
+      if (['lab', 'vet'].includes(user?.role || '')) {
         const labRes = await fetch('/api/lab-cases?limit=6');
         if (labRes.ok) {
           const d = await labRes.json();
@@ -93,24 +93,6 @@ export default function DashboardPage() {
       console.warn('Dashboard fetch error:', err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleLabTransition = async (caseId: string, nextStatus: string) => {
-    try {
-      const res = await fetch(`/api/lab-cases/${caseId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus }),
-      });
-      if (res.ok) {
-        toast.success(`Lab sample status updated to ${nextStatus}`);
-        fetchDashboardData();
-      } else {
-        toast.error('Failed to update status');
-      }
-    } catch (e: any) {
-      toast.error(e.message || 'Update failed');
     }
   };
 

@@ -39,6 +39,11 @@ export default function LabPortalPage() {
       router.push('/login');
       return;
     }
+    // Route guard: Lab Cases is exclusive to the lab role (locked RBAC spec)
+    if (user && user.role !== 'lab') {
+      router.push('/dashboard');
+      return;
+    }
     if (user) {
       fetchLabCases();
     }

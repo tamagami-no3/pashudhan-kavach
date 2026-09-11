@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     return unauthorizedResponse();
   }
 
-  const authCheck = requireRole(user, 'lab', 'vet', 'admin');
+  const authCheck = requireRole(user, 'lab', 'vet');
   if (!authCheck.authorized) {
     return authCheck.errorResponse!;
   }
