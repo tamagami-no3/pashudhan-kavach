@@ -1,0 +1,75 @@
+/* Pashudhan Kavach Custom Styles & Animations */
+
+/* Custom subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Pulsing Leaflet marker for outbreak epicenter */
+.epicenter-pulse {
+  background: rgba(239, 68, 68, 0.4);
+  border-radius: 50%;
+  height: 28px;
+  width: 28px;
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(2.2);
+    opacity: 0.0;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.epicenter-core {
+  background: #ef4444;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  height: 12px;
+  width: 12px;
+  position: absolute;
+  left: -1px;
+  top: -1px;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+}
+
+/* Leaflet dark theme tweaks */
+.leaflet-container {
+  background-color: #020617 !important;
+}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 8px !important;
+}
+
+.leaflet-popup-content {
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+  margin: 10px 12px !important;
+}
