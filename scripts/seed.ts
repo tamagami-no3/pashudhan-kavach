@@ -259,6 +259,18 @@ async function runSeed() {
     { tag_uid: '100011116661', species: 'Cattle', breed: 'Gaolao', sex: 'Male', district: 'Amravati', village: 'Chandur', owner_id: farmerAmravatiId, lat: 20.93, lng: 77.75, status: 'healthy' },
     { tag_uid: '100011116662', species: 'Buffalo', breed: 'Nagpuri', sex: 'Female', district: 'Akola', village: 'Balapur', owner_id: farmerAmravatiId, lat: 20.70, lng: 77.00, status: 'healthy' },
     { tag_uid: '100011116663', species: 'Goat', breed: 'Berari', sex: 'Male', district: 'Buldhana', village: 'Malkapur', owner_id: farmerAmravatiId, lat: 20.52, lng: 76.18, status: 'healthy' },
+
+    // Section 9 expansion — core demo districts (Pune / Nashik / Ch. Sambhajinagar / Nagpur)
+    { tag_uid: '100011112227', species: 'Cattle', breed: 'Sahiwal', sex: 'Female', district: 'Pune', village: 'Baramati', owner_id: farmerPuneId, lat: 18.15, lng: 74.21, status: 'healthy' },
+    { tag_uid: '100011112228', species: 'Goat', breed: 'Osmanabadi', sex: 'Male', district: 'Pune', village: 'Indapur', owner_id: farmerPuneId, lat: 18.10, lng: 75.02, status: 'healthy' },
+    { tag_uid: '100011112229', species: 'Buffalo', breed: 'Murrah', sex: 'Female', district: 'Pune', village: 'Daund', owner_id: farmerPuneId, lat: 18.45, lng: 74.58, status: 'healthy' },
+    { tag_uid: '100011113335', species: 'Cattle', breed: 'Gir', sex: 'Male', district: 'Nashik', village: 'Igatpuri', owner_id: farmerNashikId, lat: 19.69, lng: 73.56, status: 'healthy' },
+    { tag_uid: '100011113336', species: 'Sheep', breed: 'Deccani', sex: 'Female', district: 'Nashik', village: 'Trimbak', owner_id: farmerNashikId, lat: 19.93, lng: 73.52, status: 'healthy' },
+    { tag_uid: '100011113337', species: 'Buffalo', breed: 'Pandharpuri', sex: 'Female', district: 'Nashik', village: 'Chandwad', owner_id: farmerNashikId, lat: 20.33, lng: 74.24, status: 'healthy' },
+    { tag_uid: '100011114445', species: 'Cattle', breed: 'Tharparkar', sex: 'Female', district: 'Chhatrapati Sambhajinagar', village: 'Sillod', owner_id: farmerSambhId, lat: 19.88, lng: 75.33, status: 'healthy' },
+    { tag_uid: '100011114446', species: 'Goat', breed: 'Sangamneri', sex: 'Female', district: 'Chhatrapati Sambhajinagar', village: 'Vaijapur', owner_id: farmerSambhId, lat: 19.91, lng: 74.77, status: 'healthy' },
+    { tag_uid: '100011115555', species: 'Sheep', breed: 'Nagpuri', sex: 'Male', district: 'Nagpur', village: 'Parseoni', owner_id: farmerNagpurId, lat: 21.27, lng: 79.13, status: 'healthy' },
+    { tag_uid: '100011115556', species: 'Cattle', breed: 'Deoni', sex: 'Female', district: 'Nagpur', village: 'Kalmeshwar', owner_id: farmerNagpurId, lat: 21.02, lng: 79.05, status: 'healthy' },
   ];
 
   const createdAnimalMap: Record<string, string> = {};
@@ -289,119 +301,183 @@ async function runSeed() {
     }
   }
 
-  // 3. Seed Symptom Reports + Outbreak Flags + Lab Cases
+  // 3. Seed Symptom Reports + Outbreak Flags + Lab Cases (data-driven, idempotent)
   console.log('🔬 Seeding symptom reports & triage outbreak cases...');
-  const fmdAnimalId = createdAnimalMap['100011112224']; // Pune goat
-  const lsdAnimalId = createdAnimalMap['100011113332']; // Nashik cow
-  const anthraxAnimalId = createdAnimalMap['100011114441']; // Sambhajinagar cow
-  const pprAnimalId = createdAnimalMap['100011115553']; // Nagpur goat
 
-  if (fmdAnimalId) {
-    const { data: rep } = await supabase.from('symptom_reports').insert({
-      animal_id: fmdAnimalId,
-      reported_by: farmerPuneId,
-      symptoms: ['fever_high', 'drooling', 'mouth_blisters', 'hoof_blisters', 'lameness'],
-      gps_lat: 18.52,
-      gps_lng: 73.85,
-      status: 'escalated',
-    }).select('id').single();
+  // Mirror of lib/services/triageEngine.ts DISEASE_PROFILES (kept in sync manually).
+  const TRIAGE_PROFILES: Record<string, { name: string; weight: number; lethal: boolean; symptoms: string[] }> = {
+    FMD: { name: 'Foot and Mouth Disease (FMD)', weight: 0.75, lethal: false, symptoms: ['fever_high', 'drooling', 'mouth_blisters', 'hoof_blisters', 'teat_blisters', 'milk_yield_drop', 'lameness'] },
+    LSD: { name: 'Lumpy Skin Disease (LSD)', weight: 0.8, lethal: false, symptoms: ['fever_high', 'nodular_skin_lesions', 'swollen_lymph_nodes', 'leg_edema'] },
+    PPR: { name: 'Peste des Petits Ruminants (PPR)', weight: 0.85, lethal: true, symptoms: ['mouth_sores', 'severe_diarrhea', 'respiratory_distress', 'nasal_discharge', 'ocular_discharge'] },
+    Brucellosis: { name: 'Brucellosis', weight: 0.7, lethal: false, symptoms: ['late_term_abortion', 'retained_placenta', 'infertility'] },
+    Anthrax: { name: 'Anthrax', weight: 0.98, lethal: true, symptoms: ['sudden_death', 'unclotted_dark_blood_discharge', 'extreme_fever'] },
+    'Black Quarter': { name: 'Black Quarter (BQ)', weight: 0.9, lethal: true, symptoms: ['crackling_limb_swelling', 'lameness', 'muscle_twitching'] },
+    'Haemorrhagic Septicaemia': { name: 'Haemorrhagic Septicaemia (HS)', weight: 0.95, lethal: true, symptoms: ['respiratory_distress', 'throat_swelling', 'cyanotic_mucous_membranes'] },
+  };
 
-    if (rep) {
-      await supabase.from('outbreak_flags').insert({
-        symptom_report_id: rep.id,
-        predicted_disease: 'Foot and Mouth Disease (FMD)',
-        confidence_pct: 71.4,
-        severity_score: 72.5,
-        risk_level: 'high',
-        district: 'Pune',
-      });
-      await supabase.from('lab_cases').insert({
-        symptom_report_id: rep.id,
-        sample_id: 'LAB-20260908-0101',
-        status: 'testing',
-        status_history: [{ status: 'collected', notes: 'Epithelial tissue scraping collected' }],
-      });
+  function computeTriage(reported: string[]) {
+    let best: { name: string; matched: number; weight: number; lethal: boolean } | null = null;
+    let bestFraction = 0;
+    for (const p of Object.values(TRIAGE_PROFILES)) {
+      const matched = p.symptoms.filter((s) => reported.includes(s)).length;
+      const fraction = matched / p.symptoms.length;
+      if (fraction > bestFraction) {
+        bestFraction = fraction;
+        best = { name: p.name, matched, weight: p.weight, lethal: p.lethal };
+      }
     }
+    if (!best || bestFraction === 0) {
+      return { name: 'Inconclusive / General Malaise', confidence: 0, severity: 20, risk: 'low' as const, flag: false, lab: false, community: false };
+    }
+    const confidence = Math.round(bestFraction * 100 * 10) / 10;
+    const severity = Math.round((bestFraction * 60 + best.weight * 40) * 10) / 10;
+    let risk: 'low' | 'medium' | 'high' | 'critical' = 'low';
+    if (best.lethal && (best.matched >= 2 || bestFraction >= 0.5)) risk = 'critical';
+    else if (severity >= 70 || bestFraction >= 0.6) risk = 'high';
+    else if (severity >= 40 || bestFraction >= 0.3) risk = 'medium';
+    return {
+      name: best.name,
+      confidence,
+      severity,
+      risk,
+      flag: bestFraction >= 0.4 || risk === 'high' || risk === 'critical',
+      lab: risk === 'high' || risk === 'critical',
+      community: risk === 'high' || risk === 'critical',
+    };
   }
 
-  if (lsdAnimalId) {
-    const { data: rep } = await supabase.from('symptom_reports').insert({
-      animal_id: lsdAnimalId,
-      reported_by: farmerNashikId,
-      symptoms: ['fever_high', 'nodular_skin_lesions', 'swollen_lymph_nodes', 'leg_edema'],
-      gps_lat: 19.99,
-      gps_lng: 73.78,
-      status: 'triaged',
+  // Mixed disease patterns drawn from the triage table symptom IDs.
+  const SYMPTOM_REPORTS_SEED: Array<{
+    animalTag: string;
+    reporterEmail: string;
+    symptoms: string[];
+    status: 'pending' | 'triaged' | 'escalated' | 'resolved';
+    gps: [number, number];
+  }> = [
+    { animalTag: '100011112224', reporterEmail: 'farmer.pune@pashudhan.gov.in', symptoms: ['fever_high', 'drooling', 'mouth_blisters', 'hoof_blisters', 'lameness'], status: 'escalated', gps: [18.84, 73.91] },
+    { animalTag: '100011113332', reporterEmail: 'farmer.nashik@pashudhan.gov.in', symptoms: ['fever_high', 'nodular_skin_lesions', 'swollen_lymph_nodes', 'leg_edema'], status: 'triaged', gps: [19.99, 73.78] },
+    { animalTag: '100011114441', reporterEmail: 'farmer.sambhajinagar@pashudhan.gov.in', symptoms: ['sudden_death', 'unclotted_dark_blood_discharge', 'extreme_fever'], status: 'escalated', gps: [19.87, 75.34] },
+    { animalTag: '100011115553', reporterEmail: 'farmer.nagpur@pashudhan.gov.in', symptoms: ['mouth_sores', 'severe_diarrhea', 'respiratory_distress', 'nasal_discharge', 'ocular_discharge'], status: 'escalated', gps: [21.27, 78.58] },
+    { animalTag: '100011112223', reporterEmail: 'farmer.pune@pashudhan.gov.in', symptoms: ['fever_high', 'drooling', 'mouth_blisters'], status: 'triaged', gps: [18.60, 73.87] },
+    { animalTag: '100011112226', reporterEmail: 'farmer.kolhapur@pashudhan.gov.in', symptoms: ['fever_high', 'drooling', 'mouth_blisters', 'hoof_blisters', 'milk_yield_drop'], status: 'escalated', gps: [16.75, 74.45] },
+    { animalTag: '100011113334', reporterEmail: 'farmer.nashik@pashudhan.gov.in', symptoms: ['fever_high', 'nodular_skin_lesions', 'leg_edema'], status: 'triaged', gps: [19.57, 74.21] },
+    { animalTag: '100011116663', reporterEmail: 'farmer.amravati@pashudhan.gov.in', symptoms: ['fever_high', 'nodular_skin_lesions'], status: 'pending', gps: [20.52, 76.18] },
+    { animalTag: '100011113331', reporterEmail: 'farmer.nashik@pashudhan.gov.in', symptoms: ['late_term_abortion', 'retained_placenta', 'infertility'], status: 'escalated', gps: [19.99, 73.78] },
+    { animalTag: '100011116662', reporterEmail: 'farmer.amravati@pashudhan.gov.in', symptoms: ['retained_placenta'], status: 'resolved', gps: [20.70, 77.00] },
+    { animalTag: '100011115554', reporterEmail: 'farmer.nagpur@pashudhan.gov.in', symptoms: ['crackling_limb_swelling', 'lameness', 'muscle_twitching'], status: 'escalated', gps: [20.74, 78.60] },
+    { animalTag: '100011116661', reporterEmail: 'farmer.amravati@pashudhan.gov.in', symptoms: ['lameness', 'muscle_twitching'], status: 'pending', gps: [20.93, 77.75] },
+    { animalTag: '100011114444', reporterEmail: 'farmer.sambhajinagar@pashudhan.gov.in', symptoms: ['respiratory_distress', 'throat_swelling'], status: 'triaged', gps: [18.40, 76.56] },
+    { animalTag: '100011114443', reporterEmail: 'farmer.sambhajinagar@pashudhan.gov.in', symptoms: ['throat_swelling'], status: 'pending', gps: [18.18, 76.04] },
+    { animalTag: '100011115552', reporterEmail: 'farmer.nagpur@pashudhan.gov.in', symptoms: ['fever_high', 'milk_yield_drop'], status: 'pending', gps: [20.85, 79.32] },
+  ];
+
+  let sampleCounter = 0;
+  for (const r of SYMPTOM_REPORTS_SEED) {
+    const animalId = createdAnimalMap[r.animalTag];
+    const reporterId = createdUserMap[r.reporterEmail] || farmerPuneId;
+    if (!animalId) {
+      console.warn(`Skipping report for missing animal ${r.animalTag}`);
+      continue;
+    }
+
+    // Idempotency: skip if this animal already has a seeded report
+    const { data: existing } = await supabase
+      .from('symptom_reports')
+      .select('id')
+      .eq('animal_id', animalId)
+      .limit(1);
+    if (existing && existing.length > 0) {
+      console.log(`Report already exists for animal ${r.animalTag} — skipping`);
+      continue;
+    }
+
+    const t = computeTriage(r.symptoms);
+    const { data: rep, error: repErr } = await supabase.from('symptom_reports').insert({
+      animal_id: animalId,
+      reported_by: reporterId,
+      symptoms: r.symptoms,
+      gps_lat: r.gps[0],
+      gps_lng: r.gps[1],
+      status: r.status,
     }).select('id').single();
 
-    if (rep) {
+    if (!rep || repErr) {
+      console.warn(`Failed to insert report for ${r.animalTag}:`, repErr?.message);
+      continue;
+    }
+
+    // District derived from the animal registry row
+    const { data: animalRow } = await supabase.from('animals').select('district').eq('id', animalId).single();
+
+    if (t.flag) {
       await supabase.from('outbreak_flags').insert({
         symptom_report_id: rep.id,
-        predicted_disease: 'Lumpy Skin Disease (LSD)',
-        confidence_pct: 100.0,
-        severity_score: 85.0,
-        risk_level: 'high',
-        district: 'Nashik',
-      });
-      await supabase.from('lab_cases').insert({
-        symptom_report_id: rep.id,
-        sample_id: 'LAB-20260908-0202',
-        status: 'completed',
-        result: 'Positive for Capripoxvirus (LSDV) by PCR',
-        status_history: [{ status: 'completed', notes: 'Sequencing confirmed' }],
+        predicted_disease: t.name,
+        confidence_pct: t.confidence,
+        severity_score: t.severity,
+        risk_level: t.risk,
+        district: animalRow?.district || 'Pune',
       });
     }
-  }
-
-  if (anthraxAnimalId) {
-    const { data: rep } = await supabase.from('symptom_reports').insert({
-      animal_id: anthraxAnimalId,
-      reported_by: farmerSambhId,
-      symptoms: ['sudden_death', 'unclotted_dark_blood_discharge', 'extreme_fever'],
-      gps_lat: 19.87,
-      gps_lng: 75.34,
-      status: 'escalated',
-    }).select('id').single();
-
-    if (rep) {
-      await supabase.from('outbreak_flags').insert({
+    if (t.lab) {
+      sampleCounter += 1;
+      await supabase.from('lab_cases').insert({
         symptom_report_id: rep.id,
-        predicted_disease: 'Anthrax',
-        confidence_pct: 100.0,
-        severity_score: 98.0,
-        risk_level: 'critical',
-        district: 'Chhatrapati Sambhajinagar',
+        sample_id: `LAB-20260909-${String(sampleCounter).padStart(4, '0')}`,
+        status: t.risk === 'critical' ? 'received' : 'collected',
+        status_history: [{ status: 'collected', notes: 'Sample collected by field paravet' }],
       });
+    }
+    if (t.community) {
       await supabase.from('community_posts').insert({
         source_symptom_report_id: rep.id,
-        district: 'Chhatrapati Sambhajinagar',
-        summary: 'EMERGENCY ADVISORY: Suspected Anthrax event reported in Paithan taluka. Do not open carcasses. Ring vaccination underway.',
+        district: animalRow?.district || 'Pune',
+        summary: `${t.risk === 'critical' ? 'EMERGENCY ADVISORY' : 'ADVISORY'}: Suspected ${t.name} event reported in ${animalRow?.district || 'Pune'} district. Isolate animals and contact the district veterinary officer.`,
       });
     }
+    console.log(`Seeded report for ${r.animalTag} → ${t.name} (${t.risk})`);
   }
 
   // 4. Seed Health & Vaccination Records
   console.log('💉 Seeding vaccination records and booster dates...');
-  const healthyPuneCow = createdAnimalMap['100011112222'];
-  if (healthyPuneCow) {
-    await supabase.from('health_records').insert([
-      {
-        animal_id: healthyPuneCow,
-        record_type: 'vaccination',
-        description: 'FMD Bi-Annual Booster (Raksha Ovac)',
-        performed_by: createdUserMap['vet.pune@pashudhan.gov.in'] || farmerPuneId,
-        performed_at: new Date(Date.now() - 120 * 24 * 60 * 60 * 1000).toISOString(),
-        next_due_at: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // Due in 5 days!
-      },
-      {
-        animal_id: healthyPuneCow,
-        record_type: 'vaccination',
-        description: 'Black Quarter (BQ) Vaccine Dose',
-        performed_by: createdUserMap['vet.pune@pashudhan.gov.in'] || farmerPuneId,
-        performed_at: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
-        next_due_at: null,
-      },
-    ]);
+  const HEALTH_RECORDS_SEED: Array<{
+    tag: string;
+    byEmail: string;
+    type: 'vaccination' | 'treatment' | 'checkup';
+    description: string;
+    agoDays: number;
+    dueDays: number | null;
+  }> = [
+    { tag: '100011112222', byEmail: 'vet.pune@pashudhan.gov.in', type: 'vaccination', description: 'FMD Bi-Annual Booster (Raksha Ovac)', agoDays: 120, dueDays: 5 },
+    { tag: '100011112222', byEmail: 'vet.pune@pashudhan.gov.in', type: 'vaccination', description: 'Black Quarter (BQ) Vaccine Dose', agoDays: 180, dueDays: null },
+    { tag: '100011112223', byEmail: 'vet.pune@pashudhan.gov.in', type: 'vaccination', description: 'FMD Bi-Annual Booster (Raksha Ovac)', agoDays: 150, dueDays: 30 },
+    { tag: '100011112227', byEmail: 'vet.pune@pashudhan.gov.in', type: 'vaccination', description: 'Haemorrhagic Septicaemia (HS) Vaccine', agoDays: 90, dueDays: null },
+    { tag: '100011113331', byEmail: 'vet.nashik@pashudhan.gov.in', type: 'vaccination', description: 'Lumpy Skin Disease (LSD) Vaccination', agoDays: 60, dueDays: null },
+    { tag: '100011113335', byEmail: 'vet.nashik@pashudhan.gov.in', type: 'vaccination', description: 'FMD Bi-Annual Booster (Raksha Ovac)', agoDays: 175, dueDays: 15 },
+    { tag: '100011114445', byEmail: 'vet.sambhajinagar@pashudhan.gov.in', type: 'vaccination', description: 'Anthrax Spore Vaccine (Annual)', agoDays: 200, dueDays: null },
+    { tag: '100011115551', byEmail: 'paravet.amravati@pashudhan.gov.in', type: 'vaccination', description: 'FMD Bi-Annual Booster (Raksha Ovac)', agoDays: 100, dueDays: 90 },
+    { tag: '100011115555', byEmail: 'paravet.amravati@pashudhan.gov.in', type: 'vaccination', description: 'PPR Vaccination', agoDays: 45, dueDays: null },
+    { tag: '100011115556', byEmail: 'paravet.amravati@pashudhan.gov.in', type: 'checkup', description: 'Routine health check-up — vitals normal', agoDays: 20, dueDays: null },
+  ];
+
+  for (const h of HEALTH_RECORDS_SEED) {
+    const animalId = createdAnimalMap[h.tag];
+    if (!animalId) continue;
+    // Idempotency: skip if this animal already has any health record
+    const { data: existingRec } = await supabase
+      .from('health_records')
+      .select('id')
+      .eq('animal_id', animalId)
+      .limit(1);
+    if (existingRec && existingRec.length > 0) continue;
+    await supabase.from('health_records').insert({
+      animal_id: animalId,
+      record_type: h.type,
+      description: h.description,
+      performed_by: createdUserMap[h.byEmail] || farmerPuneId,
+      performed_at: new Date(Date.now() - h.agoDays * 24 * 60 * 60 * 1000).toISOString(),
+      next_due_at: h.dueDays ? new Date(Date.now() + h.dueDays * 24 * 60 * 60 * 1000).toISOString() : null,
+    });
   }
 
   // 5. Seed Sample Chatbot Session & Messages
