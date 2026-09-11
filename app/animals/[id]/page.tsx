@@ -18,6 +18,7 @@ import {
   Clock,
   Printer,
   Share2,
+  FileDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +36,7 @@ export default function AnimalDetailPage({ params }: { params: { id: string } })
   const [healthRecords, setHealthRecords] = useState<any[]>([]);
   const [symptomReports, setSymptomReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
 
   // Add Health Record modal state
   const [isAddRecordOpen, setIsAddRecordOpen] = useState(false);
@@ -43,6 +45,56 @@ export default function AnimalDetailPage({ params }: { params: { id: string } })
   const [performedAt, setPerformedAt] = useState(new Date().toISOString().slice(0, 10));
   const [nextDueAt, setNextDueAt] = useState('');
   const [submittingRecord, setSubmittingRecord] = useState(false);
+
+  // ---- Section 6: Download actions (client-side blob, no new backend) ----
+  const triggerBlobDownload = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  };
+
+  const downloadQrPng = async () => {
+    try {
+      if (!animal?.qr_code_url) {
+        toast.error('QR code unavailable for this animal');
+        return;
+      }
+      const res = await fetch(animal.qr_code_url);
+      const blob = await res.blob();
+      triggerBlobDownload(blob, `qr-${animal.tag_uid}.png`);
+      toast.success('QR code downloaded');
+    } catch (e: any) {
+      toast.error(e.message || 'QR download failed');
+    }
+  };
+
+  const downloadHealthCard = async () => {
+    setDownloading(true);
+    try {
+      const res = await fetch(`/api/animals/${params.id}/health-card`, { headers: { Accept: 'application/json' } });
+      if (!res.ok) {
+        toast.error('Failed to load health card data');
+        return;
+      }
+      const d = await res.json();
+      if (!d.success || !d.data) {
+        toast.error('Health card data unavailable');
+        return;
+      }
+      const blob = new Blob([JSON.stringify(d.data, null, 2)], { type: 'application/json' });
+      triggerBlobDownload(blob, `health-passport-${animal?.tag_uid || params.id}.json`);
+      toast.success('Health passport downloaded');
+    } catch (e: any) {
+      toast.error(e.message || 'Download failed');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -330,6 +382,26 @@ export default function AnimalDetailPage({ params }: { params: { id: string } })
             >
               <Printer className="h-3.5 w-3.5" />
               Print Health Passport
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={downloadQrPng}
+              className="gap-1.5 text-xs w-full"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              Download QR Code
+            </Button>
+
+            <Button
+              size="sm"
+              onClick={downloadHealthCard}
+              disabled={downloading}
+              className="gap-1.5 text-xs w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              <FileDown className="h-3.5 w-3.5" />
+              {downloading ? 'Preparing...' : 'Download Health Passport'}
             </Button>
           </Card>
         </div>
