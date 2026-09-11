@@ -18,6 +18,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { DIAGNOSTIC_SYMPTOMS, GENERAL_SYMPTOMS } from '@/lib/validation';
+import { REPORT_SYMPTOM_ROLES } from '@/lib/role-features';
 
 export default function ReportSymptomPage() {
   const { user, loading: authLoading, t } = useAuth();
@@ -34,6 +35,11 @@ export default function ReportSymptomPage() {
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
+      return;
+    }
+    // Route guard: Report Symptoms is farmer/paravet ONLY (locked RBAC spec)
+    if (user && !REPORT_SYMPTOM_ROLES.includes(user.role)) {
+      router.push('/dashboard');
       return;
     }
     if (user) {

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser, requireRole } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/server';
 import { CreateSymptomReportSchema, parsePagination } from '@/lib/validation';
 import { runDiseaseTriage } from '@/lib/services/triageEngine';
@@ -79,6 +79,12 @@ export async function POST(request: NextRequest) {
   const user = await getCurrentUser(request);
   if (!user) {
     return unauthorizedResponse();
+  }
+
+  // Locked RBAC spec: symptom report submission is farmer/paravet ONLY.
+  const authCheck = requireRole(user, 'farmer', 'paravet');
+  if (!authCheck.authorized) {
+    return authCheck.errorResponse!;
   }
 
   const rate = checkRateLimit(`symptom-report:${user.authId}`, { maxRequests: 20, windowMs: 60 * 1000 });

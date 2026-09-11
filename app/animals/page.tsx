@@ -23,6 +23,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { MAHARASHTRA_DISTRICTS } from '@/lib/constants/districts';
 import { toast } from 'sonner';
+import { REGISTRY_ROLES } from '@/lib/role-features';
 
 export default function AnimalsPage() {
   const { user, loading: authLoading, t } = useAuth();
@@ -48,6 +49,12 @@ export default function AnimalsPage() {
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
+      return;
+    }
+
+    // Route guard: Livestock Registry is farmer/paravet ONLY (locked RBAC spec)
+    if (user && !REGISTRY_ROLES.includes(user.role)) {
+      router.push('/dashboard');
       return;
     }
 

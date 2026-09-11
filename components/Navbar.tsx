@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ROLE_FEATURES, type FeatureKey } from '@/lib/role-features';
 
 export function Navbar() {
   const { user, logout, language, setLanguage, t } = useAuth();
@@ -37,21 +38,19 @@ export function Navbar() {
     }
   };
 
-  const navLinks = [
-    { href: '/dashboard', label: t('nav_dashboard'), icon: Activity },
-    { href: '/animals', label: t('nav_registry'), icon: HeartPulse },
-    { href: '/report-symptom', label: t('nav_report'), icon: ShieldAlert },
-    { href: '/heatmap', label: t('nav_heatmap'), icon: MapPin },
-    { href: '/community', label: t('nav_community'), icon: Radio },
-  ];
+  // Full feature catalog — rendered strictly filtered by ROLE_FEATURES[role].
+  const featureCatalog: Record<FeatureKey, { href: string; label: string; icon: React.ElementType }> = {
+    dashboard: { href: '/dashboard', label: t('nav_dashboard'), icon: Activity },
+    animals: { href: '/animals', label: t('nav_registry'), icon: HeartPulse },
+    'report-symptom': { href: '/report-symptom', label: t('nav_report'), icon: ShieldAlert },
+    heatmap: { href: '/heatmap', label: t('nav_heatmap'), icon: MapPin },
+    community: { href: '/community', label: t('nav_community'), icon: Radio },
+    lab: { href: '/lab', label: t('nav_lab'), icon: FlaskConical },
+    analytics: { href: '/analytics', label: t('nav_analytics'), icon: BarChart3 },
+  };
 
-  if (user?.role === 'lab' || user?.role === 'admin') {
-    navLinks.push({ href: '/lab', label: t('nav_lab'), icon: FlaskConical });
-  }
-
-  if (user?.role === 'admin' || user?.role === 'vet') {
-    navLinks.push({ href: '/analytics', label: t('nav_analytics'), icon: BarChart3 });
-  }
+  const allowedFeatures = user ? ROLE_FEATURES[user.role] ?? [] : [];
+  const navLinks = allowedFeatures.map((key) => featureCatalog[key]);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">

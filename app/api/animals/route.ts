@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     return unauthorizedResponse();
   }
 
-  const authCheck = requireRole(user, 'farmer', 'paravet', 'vet', 'admin');
+  const authCheck = requireRole(user, 'farmer', 'paravet');
   if (!authCheck.authorized) {
     return authCheck.errorResponse!;
   }
