@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = request.nextUrl;
   const status = searchParams.get('status');
+  const district = searchParams.get('district');
+  const sampleId = searchParams.get('sample_id'); // QR scan check-in lookup
 
   let cases = getLabCases(status || undefined);
 
@@ -30,12 +32,19 @@ export async function GET(request: NextRequest) {
     const admin = createAdminClient();
     let query = admin
       .from('lab_cases')
-      .select('*, symptom_report:symptom_reports(id, symptoms, reported_at, animal:animals(id, tag_uid, species, breed, district, owner_id)), assigned_lab:users!lab_cases_assigned_lab_id_fkey(id, full_name, email)');
+      .select('*, symptom_report:symptom_reports(id, symptoms, reported_at, animal:animals(id, tag_uid, species, breed, district, village, owner_id)), assigned_lab:users!lab_cases_assigned_lab_id_fkey(id, full_name, email)');
 
     if (status) query = query.eq('status', status);
+    if (sampleId) query = query.eq('sample_id', sampleId);
     const { data, error } = await query;
-    if (!error && data && data.length > 0) {
-      return successResponse(data, { total: data.length, limit: params.limit, offset: params.offset });
+    if (!error && data) {
+      let rows = data as any[];
+      // District filter (nested relation) — filter in JS for alias safety
+      if (district) {
+        rows = rows.filter((c) => c.symptom_report?.animal?.district === district);
+      }
+      // Supabase is authoritative — return its result even when empty
+      return successResponse(rows, { total: rows.length, limit: params.limit, offset: params.offset });
     }
   } catch (supaErr) {
     // Supabase fallback

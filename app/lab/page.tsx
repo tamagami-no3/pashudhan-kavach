@@ -13,6 +13,8 @@ import {
   Activity,
   Filter,
   FileCheck2,
+  QrCode,
+  History,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +23,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { MAHARASHTRA_DISTRICTS } from '@/lib/constants/districts';
 
 export default function LabPortalPage() {
   const { user, loading: authLoading, t } = useAuth();
@@ -29,6 +32,9 @@ export default function LabPortalPage() {
   const [labCases, setLabCases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
+  const [districtFilter, setDistrictFilter] = useState('');
+  const [qrCheckInId, setQrCheckInId] = useState('');
+  const [checkingIn, setCheckingIn] = useState(false);
   const [activeCaseForFindings, setActiveCaseForFindings] = useState<any | null>(null);
   const [findingsResult, setFindingsResult] = useState('');
   const [findingsNotes, setFindingsNotes] = useState('');
@@ -47,13 +53,14 @@ export default function LabPortalPage() {
     if (user) {
       fetchLabCases();
     }
-  }, [user, authLoading, router, statusFilter]);
+  }, [user, authLoading, router, statusFilter, districtFilter]);
 
   const fetchLabCases = async () => {
     setLoading(true);
     try {
       let url = '/api/lab-cases?limit=50';
       if (statusFilter) url += `&status=${statusFilter}`;
+      if (districtFilter) url += `&district=${encodeURIComponent(districtFilter)}`;
       const res = await fetch(url);
       if (res.ok) {
         const d = await res.json();
@@ -136,6 +143,40 @@ export default function LabPortalPage() {
     }
   };
 
+  // QR Scan Check-In: scan/paste the sample_id QR content and check the
+  // sample in (advances collected/in_transit -> received)
+  const handleQrCheckIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const sampleId = qrCheckInId.trim();
+    if (!sampleId) {
+      toast.error('Scan or enter a Sample ID');
+      return;
+    }
+    setCheckingIn(true);
+    try {
+      const res = await fetch(`/api/lab-cases?sample_id=${encodeURIComponent(sampleId)}&limit=1`);
+      if (!res.ok) {
+        toast.error('Lookup failed');
+        return;
+      }
+      const d = await res.json();
+      const found = (d.data || [])[0];
+      if (!found) {
+        toast.error(`No case found for sample ${sampleId}`);
+        return;
+      }
+      if (found.status === 'received' || found.status === 'testing' || found.status === 'completed') {
+        toast.info(`Sample ${sampleId} already checked in (${found.status})`);
+        return;
+      }
+      await handleStatusTransition(found.id, 'received');
+    } catch (err: any) {
+      toast.error(err.message || 'Check-in failed');
+    } finally {
+      setCheckingIn(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-zinc-950">
       <Navbar />
@@ -155,6 +196,16 @@ export default function LabPortalPage() {
 
           <div className="flex items-center gap-2">
             <select
+              value={districtFilter}
+              onChange={(e) => setDistrictFilter(e.target.value)}
+              className="h-10 px-3 text-xs rounded-md border bg-background"
+            >
+              <option value="">{t('all_districts')}</option>
+              {MAHARASHTRA_DISTRICTS.map((d) => (
+                <option key={d.name} value={d.name}>{d.name}</option>
+              ))}
+            </select>
+            <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="h-10 px-3 text-xs rounded-md border bg-background"
@@ -163,11 +214,32 @@ export default function LabPortalPage() {
               <option value="collected">{t('lab_status_collected')}</option>
               <option value="in_transit">{t('lab_status_in_transit')}</option>
               <option value="received">{t('lab_status_received')}</option>
-              <option value="testing">Testing</option>
-              <option value="completed">Completed</option>
+              <option value="testing">{t('lab_status_testing')}</option>
+              <option value="completed">{t('lab_status_completed')}</option>
             </select>
           </div>
         </div>
+
+        {/* QR Scan Check-In */}
+        <Card>
+          <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2 text-xs font-semibold text-purple-800 dark:text-purple-300 whitespace-nowrap">
+              <QrCode className="h-4 w-4" />
+              QR Scan Check-In
+            </div>
+            <form onSubmit={handleQrCheckIn} className="flex items-center gap-2 flex-1">
+              <Input
+                placeholder="Scan or type Sample ID (e.g. LAB-20260909-0001)"
+                value={qrCheckInId}
+                onChange={(e) => setQrCheckInId(e.target.value)}
+                className="h-9 text-xs flex-1"
+              />
+              <Button type="submit" size="sm" disabled={checkingIn} className="bg-purple-600 hover:bg-purple-700 text-white text-xs">
+                {checkingIn ? 'Checking in...' : 'Check In Sample'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         {/* Lab Cases List */}
         {loading ? (
@@ -205,6 +277,30 @@ export default function LabPortalPage() {
                           Official Lab Finding:
                         </span>
                         <p className="text-emerald-700 dark:text-emerald-200 font-medium">{lc.result}</p>
+                      </div>
+                    )}
+
+                    {/* Status History Timeline (spec: visible custody trail) */}
+                    {Array.isArray(lc.status_history) && lc.status_history.length > 0 && (
+                      <div className="pt-1">
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground mb-1">
+                          <History className="h-3 w-3" />
+                          Custody & Testing Timeline
+                        </div>
+                        <div className="flex flex-col gap-1 pl-1 border-l-2 border-purple-200 dark:border-purple-800">
+                          {(lc.status_history as any[]).map((h, i) => (
+                            <div key={i} className="flex items-center gap-2 text-[11px]">
+                              <span className="h-1.5 w-1.5 rounded-full bg-purple-500 flex-shrink-0" />
+                              <span className="font-semibold text-foreground">{t(`lab_status_${h.status}`) || h.status}</span>
+                              {h.updated_at && (
+                                <span className="text-muted-foreground">
+                                  {new Date(h.updated_at).toLocaleString('en-IN')}
+                                </span>
+                              )}
+                              {h.notes && <span className="text-muted-foreground italic">— {h.notes}</span>}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
