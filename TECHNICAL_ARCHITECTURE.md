@@ -266,3 +266,4 @@ The database consists of 8 interconnected entities:
 ---
 
 *Pashudhan Kavach — Built with precision, resilience, and rural empathy for Smart India Hackathon 2026.*
+
