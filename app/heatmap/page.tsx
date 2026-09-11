@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Navbar } from '@/components/Navbar';
+import 'leaflet/dist/leaflet.css';
 import {
   MapPin,
   ShieldAlert,
@@ -25,10 +26,76 @@ export default function HeatmapPage() {
   const [loading, setLoading] = useState(true);
   const [selectedDivision, setSelectedDivision] = useState<string>('All');
   const [selectedDistrict, setSelectedDistrict] = useState<any | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
     fetchHeatmap();
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
   }, []);
+
+  // Initialize Leaflet map with district risk markers once real data is loaded
+  useEffect(() => {
+    if (!heatmapData || heatmapData.length === 0 || !mapContainerRef.current) return;
+    let cancelled = false;
+    (async () => {
+      const L = await import('leaflet');
+      if (cancelled || !mapContainerRef.current) return;
+      if (mapRef.current) mapRef.current.remove();
+
+      const map = L.map(mapContainerRef.current, {
+        center: [19.75, 75.7],
+        zoom: 6,
+        scrollWheelZoom: false,
+      });
+      mapRef.current = map;
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+      }).addTo(map);
+
+      const riskColor = (level: string) => {
+        if (level === 'critical') return '#dc2626';
+        if (level === 'high') return '#f59e0b';
+        if (level === 'medium') return '#eab308';
+        return '#10b981';
+      };
+
+      for (const d of heatmapData) {
+        const color = riskColor(d.riskLevel);
+        const radius = Math.max(8, Math.min(26, 6 + (d.riskScore || 0) / 5));
+        L.circleMarker([d.lat, d.lng], {
+          radius,
+          color,
+          fillColor: color,
+          fillOpacity: 0.7,
+          weight: 2,
+        })
+          .addTo(map)
+          .bindPopup(
+            `<b>${d.district}</b> — ${d.riskLevel.toUpperCase()} (${d.riskScore}/100)<br/>` +
+              `Active outbreak flags (14d): ${d.activeCaseCount}<br/>` +
+              `Dominant pathogen: ${d.dominantDisease || 'N/A'}<br/>` +
+              `${d.weatherSummary}`
+          );
+      }
+
+      try {
+        map.fitBounds(heatmapData.map((d) => [d.lat, d.lng]), { padding: [30, 30] });
+      } catch {
+        // single-point fallback
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [heatmapData]);
 
   const fetchHeatmap = async () => {
     setLoading(true);
@@ -123,6 +190,32 @@ export default function HeatmapPage() {
             ))}
           </div>
         </div>
+
+        {/* Actual Geographic Map (Leaflet + OpenStreetMap, no API key) */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-bold flex items-center gap-2">
+              <Layers className="h-5 w-5 text-emerald-600" />
+              Maharashtra District Risk Map
+            </CardTitle>
+            <CardDescription className="text-xs">
+              36 district centroids colored by live risk index — click a marker for outbreak & weather details. Updated with real outbreak flags + Open-Meteo data.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-3">
+            {loading ? (
+              <div className="h-[400px] bg-muted/30 animate-pulse rounded-xl flex items-center justify-center text-xs text-muted-foreground">
+                Loading district risk data…
+              </div>
+            ) : (
+              <div
+                ref={mapContainerRef}
+                id="maharashtra-risk-map"
+                className="h-[400px] w-full rounded-xl overflow-hidden z-0 border"
+              />
+            )}
+          </CardContent>
+        </Card>
 
         {/* Legend Banner */}
         <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-white dark:bg-zinc-900 border rounded-xl text-xs shadow-sm">
