@@ -259,3 +259,13 @@ export function getHealthRecordsDue7Days(): MockHealthRecord[] {
   return db.health_records;
 }
 
+export function getHealthRecordsByAnimalId(animalId: string): MockHealthRecord[] {
+  const db = loadDB();
+  return db.health_records.filter((h) => h.animal_id === animalId);
+}
+
+export function findSymptomReportById(id: string): MockSymptomReport | undefined {
+  const db = loadDB();
+  return db.symptom_reports.find((r) => r.id === id);
+}
+

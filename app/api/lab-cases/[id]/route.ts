@@ -33,7 +33,7 @@ export async function GET(
     return unauthorizedResponse();
   }
 
-  const authCheck = requireRole(user, 'lab', 'vet');
+  const authCheck = requireRole(user, 'lab', 'vet', 'admin');
   if (!authCheck.authorized) {
     return authCheck.errorResponse!;
   }

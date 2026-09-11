@@ -14,6 +14,8 @@ import {
   FlaskConical,
   Radio,
   Globe,
+  Bot,
+  Layers,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +54,9 @@ export function Navbar() {
   const allowedFeatures = user ? ROLE_FEATURES[user.role] ?? [] : [];
   const navLinks = allowedFeatures.map((key) => featureCatalog[key]);
 
+  const isChatbotActive = pathname === '/chatbot';
+  const isChannelsActive = pathname === '/channels';
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <div className="container flex h-16 items-center justify-between px-4 md:px-8">
@@ -63,9 +68,9 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          {user && (
-            <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
-              {navLinks.map((link) => {
+          <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
+            {user &&
+              navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = pathname === link.href;
                 return (
@@ -83,8 +88,32 @@ export function Navbar() {
                   </Link>
                 );
               })}
-            </nav>
-          )}
+
+            {/* Standalone Chatbot & Channels Nav Links placed next to each other */}
+            <Link
+              href="/chatbot"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
+                isChatbotActive
+                  ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              <Bot className="h-4 w-4 text-emerald-600" />
+              {t('nav_chatbot') || 'Chatbot'}
+            </Link>
+
+            <Link
+              href="/channels"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
+                isChannelsActive
+                  ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              <Layers className="h-4 w-4 text-emerald-600" />
+              {t('nav_channels') || 'Channels'}
+            </Link>
+          </nav>
         </div>
 
         {/* Right side controls & Trilingual Switcher */}
