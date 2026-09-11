@@ -5,6 +5,7 @@ Last updated: 2026-09-10 21:47 IST
 ---
 
 ## Open
+(unresolved items go here, newest at top)
 _(unresolved items go here, newest at top)_
 
 - [ ] **Real Supabase wiring**: All APIs currently run on local `lib/persistent-store.ts`
@@ -28,6 +29,7 @@ _(unresolved items go here, newest at top)_
 ---
 
 ## Resolved
+(move items here once fixed, keep the original text, add a one-line note on what changed)
 _(fixed items, newest at top)_
 
 ### 2026-09-10 — Session 3 (Continuation after context interruption)
