@@ -117,20 +117,45 @@ sequenceDiagram
 
 ---
 
-### C. GIS Outbreak Risk Engine & Meteorological Correlation
+### C. GIS Outbreak Risk Engine & 5-Factor Weighted Mathematical Formulation
 
 - **Route**: [`app/api/geo/heatmap/route.ts`](file:///c:/sih2026/project/app/api/geo/heatmap/route.ts)
 - **Engine**: [`lib/services/riskEngine.ts`](file:///c:/sih2026/project/lib/services/riskEngine.ts)
+- **UI / Heatmap**: [`app/heatmap/page.tsx`](file:///c:/sih2026/project/app/heatmap/page.tsx)
 
-The risk engine computes a real-time risk score ($0–100$) for all 36 Maharashtra districts using weighted epidemiological and environmental factors:
+The platform implements an epidemiological risk model that replaces static numbers with a transparent, multi-factor linear regression and spatial spillover formula evaluated across all 36 Maharashtra districts:
 
-$$\text{Risk Score} = \min\Big(100,\, \sum (\text{Severity} \times \text{RiskWeight}) + \text{WeatherRiskBonus} - \text{VaccinationDeduction}\Big)$$
+$$\text{RiskScore} = 0.30 \times \text{CaseRate} + 0.20 \times \text{TrendSlope} + 0.15 \times \text{VaccGap} + 0.20 \times \text{WeatherVector} + 0.15 \times \text{NeighborSpillover}$$
 
-1. **Active Flags Weighting**: Critical alerts ($+30$), High ($+20$), Medium ($+10$).
-2. **Meteorological Vector Bonus**:
-   - High humidity ($>80\%$) + warm temperatures ($24–35^\circ\text{C}$) elevate vector breeding (LSD mosquitoes/ticks).
-   - Heavy rainfall increases standing water risks for bacterial clostridial spores (Anthrax/BQ).
-3. **Division Centroid Batching**: Queries 6 revenue division centroids (Konkan, Pune, Nashik, Chhatrapati Sambhajinagar, Amravati, Nagpur) to optimize third-party API rate limits.
+$$\text{Displayed Score} = \text{round}(\text{RiskScore} \times 100) \quad [0 \text{ to } 100]$$
+
+#### 1. Mathematical Breakdown of Subscores
+
+| Factor | Weight | Formulation & Normalization | Description |
+|---|:---:|---|---|
+| **CaseRate** | **30%** | $\frac{\text{active\_flagged\_cases}_{14\text{d}}}{\text{registered\_animals}} \xrightarrow{\text{min-max}} [0, 1]$ | Proportion of livestock herd actively affected by outbreak flags in the past 14 days. |
+| **TrendSlope** | **20%** | $m = \frac{N\sum(t \cdot y) - \sum t \sum y}{N\sum t^2 - (\sum t)^2} \xrightarrow{\text{min-max}} [0, 1]$ | 14-day simple linear regression slope of daily case counts ($N=14$). Identifies accelerating outbreaks vs. plateauing conditions. |
+| **VaccGap** | **15%** | $1 - \frac{\text{vaccinated\_animals}}{\text{registered\_animals}} \in [0, 1]$ | Direct herd vulnerability gap. High vaccination coverage directly suppresses the composite score. |
+| **WeatherVector** | **20%** | $0.45 \cdot \text{Humidity} + 0.35 \cdot \text{Rain} + 0.20 \cdot \text{Heat} \in [0, 1]$ | Open-Meteo telemetry measuring ambient conditions favoring vector propagation (LSD mosquitoes/ticks, FMD moisture, Anthrax spore resilience). |
+| **NeighborSpillover** | **15%** | $\sum_{B \ne A} \frac{\text{cases}_B}{\max(10,\, d(A,B))} \xrightarrow{\text{min-max}} [0, 1]$ | Spatial transmission pressure from neighboring districts within the canonical `ALERT_RADIUS_KM` ($150\text{ km}$), weighted by Haversine distance. |
+
+$$\sum_{i=1}^5 \text{Weight}_i = 0.30 + 0.20 + 0.15 + 0.20 + 0.15 = 1.00$$
+
+#### 2. Dynamic Relative Percentile Bucketing
+Rather than using arbitrary static score cutoffs, risk tiers are computed dynamically fresh on each evaluation across the active district dataset:
+- **Low Tier**: $< 25\text{th}$ Percentile
+- **Medium Tier**: $25\text{th} \le \text{Percentile} < 50\text{th}$
+- **High Tier**: $50\text{th} \le \text{Percentile} < 75\text{th}$
+- **Critical Tier**: $\ge 75\text{th}$ Percentile (Top Quartile)
+
+#### 3. Administrative Override Integration
+If a district veterinary authority or state administrator issues an official intervention or risk override (via `district_admin_actions` or `risk_override_level`):
+- The UI prominently flags: `"Admin override — computed score: X"`.
+- Both the override tier and the raw percentile bucket are preserved for transparent auditing.
+
+#### 4. UI Tooltip & Panel Transparency
+- **Leaflet Marker Hover**: Displays an interactive tooltip itemizing all 5 subscores and their weights.
+- **Leaflet Marker Click / Panel View**: Expands into an interactive breakdown card with visual progress bars for each factor.
 
 ---
 
@@ -183,6 +208,68 @@ graph LR
 ```
 
 - **Interactive IVR Voice Demo**: Integrated browser speech synthesis simulating dial-in IVR helpline (1962). Supports touch-tone menu navigation (1: FMD, 2: LSD, 3: Emergency Anthrax Quarantine, 4: Repeat Menu) in all 3 languages.
+
+---
+
+### G. Farmer-Centric High-Adoption Architecture & SLA Case Tracker Pipeline
+
+To maximize rural adoption among marginal livestock owners and para-veterinarians, Pashudhan Kavach provides a zero-friction reporting and rapid emergency dispatch pipeline:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Farmer as Farmer / Dairy Keeper
+    participant Web as Frictionless UI (/report)
+    participant IDB as IndexedDB Queue (offlineStore)
+    participant API as /api/symptoms/triage-report
+    participant Triage as Triage Engine
+    participant Tracker as Case Tracker (/reports/[id]/track)
+    participant Vet as Mobile Vet Unit (Dr. Vijay Shinde)
+
+    Farmer->>Web: Selects 12 Symptoms (Touch / Voice AI) + Tag UID
+    alt Offline Mode (No Internet)
+        Web->>IDB: queueOfflineReport(payload)
+        Web->>Tracker: Redirect to /reports/offline/track
+        Note over Web,IDB: Auto-syncs via window.online listener
+    else Online Mode
+        Web->>API: POST /api/symptoms/triage-report
+        API->>Triage: runDiseaseTriage(symptoms)
+        API->>API: Generates PK-XXXXXX Ticket & Computes SLA (30-180m)
+        API->>API: Resolves Taluka Dispensary & Assigned Vet
+        API-->>Web: JSON { ticket_id, status, assigned_vet, first_aid, sla_deadline }
+        Web->>Tracker: Redirect to /reports/PK-XXXXXX/track
+        Tracker->>Vet: 4-Phase Stepper with Live ETA Countdown
+        Vet-->>Farmer: Emergency MVU (MH-12-GV-1962) Dispatched
+    end
+```
+
+#### 1. 12-Symptom Clinical Catalog & Voice AI Intent Matching
+- **File**: [`lib/constants/symptoms.ts`](file:///c:/sih2026/project/lib/constants/symptoms.ts)
+- Catalog of 12 clinical symptoms with Lucide icons, disease mappings (*FMD, LSD, PPR, Brucellosis, Anthrax, BQ, HS*), folk descriptions in Marathi/Hindi/English, and root speech keywords (`matchSymptomsFromText`).
+- Integrates with Web Speech API via `useVoiceInput` hook: spoken terms like *"ताप"*, *"लाळ गळत आहे"*, or *"mouth blister"* automatically check the corresponding diagnostic cards in real time.
+
+#### 2. Client-Side IndexedDB Store-and-Forward Queue
+- **File**: [`lib/offlineStore.ts`](file:///c:/sih2026/project/lib/offlineStore.ts)
+- Implements `pashudhan_offline_db` via native browser IndexedDB. When `navigator.onLine === false`, submissions are preserved locally without data loss.
+- Attaches an active `window.addEventListener('online')` listener that automatically syncs pending reports to `/api/symptoms/triage-report` when cellular data or WiFi reconnects.
+
+#### 3. Visual Delivery-App Case Progression Tracker
+- **File**: [`app/reports/[id]/track/page.tsx`](file:///c:/sih2026/project/app/reports/%5Bid%5D/track/page.tsx)
+- Deliveroo / Swiggy style 4-phase tracking stepper:
+  1. `तक्रार नोंदणी पूर्ण` (Report Registered with PK-XXXXXX audit ticket)
+  2. `पशुवैद्यक नियुक्त` (Officer Assigned — Dr. Vijay Shinde, LDO)
+  3. `पशुवैद्यक रवाना` (Dispatched on Field with **Live Dynamic ETA Countdown Timer** & vehicle `MH-12-GV-1962`)
+  4. `उपचार व नमुना संकलन` (Treatment & Diagnostic Sampling)
+- Includes 1-tap Vet phone call link (`tel:+919822033333`), instant state helpline (`tel:1962`), immediate clinical first-aid dos & don'ts, and social sharing.
+
+#### 4. WhatsApp Cloud API Webhook Ingestion
+- **File**: [`app/api/webhooks/whatsapp/route.ts`](file:///c:/sih2026/project/app/api/webhooks/whatsapp/route.ts)
+- `GET` verification endpoint for Meta webhook handshake (`hub.challenge` / `hub.verify_token`).
+- `POST` inbound message ingestion supporting farmer WhatsApp text and voice notes. Automatically parses symptoms, generates a `PK-XXXXXX` triage ticket, and sends back a localized Marathi auto-reply with immediate guidance.
+
+#### 5. 36-District Village Outbreak Early Warning Broadcast Cron
+- **File**: [`app/api/cron/village-alerts/route.ts`](file:///c:/sih2026/project/app/api/cron/village-alerts/route.ts)
+- Scheduled job protected by `CRON_SECRET`. Evaluates the 5-factor risk score across all 36 Maharashtra districts, identifies `critical` and `high` outbreak clusters, and generates structured biosecurity advisories published to the community advisory feed.
 
 ---
 

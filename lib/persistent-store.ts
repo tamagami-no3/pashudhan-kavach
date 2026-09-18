@@ -18,6 +18,50 @@ import {
   MockCommunityPost,
 } from './mock-db';
 
+interface MockDistrictStaffAssignment {
+  id: string;
+  district_id: string;
+  user_id: string;
+  role: string;
+  assigned_at: string;
+}
+
+interface MockDistrictAdminAction {
+  id: string;
+  district_id: string;
+  admin_id: string;
+  action_type: 'intervention' | 'risk_override';
+  notes: string;
+  override_level?: 'low' | 'medium' | 'high' | 'critical' | null;
+  created_at: string;
+}
+
+export interface MockTriageTicket {
+  ticket_id: string;
+  report_id: string;
+  status: 'reported' | 'officer_assigned' | 'vet_dispatched' | 'treatment_completed';
+  triage: any;
+  sla_minutes: number;
+  sla_deadline: string;
+  assigned_vet: {
+    name: string;
+    role: string;
+    phone: string;
+    vehicle_no: string;
+    eta_minutes: number;
+  };
+  dispensary: {
+    name: string;
+    address: string;
+    helpline: string;
+    distance_km: number;
+  };
+  first_aid: string[];
+  tag_uid?: string;
+  symptoms: string[];
+  created_at: string;
+}
+
 interface DBStructure {
   users: MockUser[];
   animals: MockAnimal[];
@@ -26,6 +70,9 @@ interface DBStructure {
   lab_cases: MockLabCase[];
   health_records: MockHealthRecord[];
   community_posts: MockCommunityPost[];
+  district_staff_assignments?: MockDistrictStaffAssignment[];
+  district_admin_actions?: MockDistrictAdminAction[];
+  triage_tickets?: MockTriageTicket[];
 }
 
 const DB_FILE_PATH = path.join(process.cwd(), 'data', 'db.json');
@@ -253,6 +300,21 @@ export function getCommunityPosts(district?: string): MockCommunityPost[] {
   return db.community_posts;
 }
 
+export function saveCommunityPost(post: Omit<MockCommunityPost, 'id' | 'created_at'>): MockCommunityPost {
+  const db = loadDB();
+  const newPost: MockCommunityPost = {
+    ...post,
+    id: `post-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    created_at: new Date().toISOString(),
+  };
+  if (!db.community_posts) {
+    db.community_posts = [];
+  }
+  db.community_posts.unshift(newPost);
+  saveDB(db);
+  return newPost;
+}
+
 // ----------------- HEALTH RECORDS ----------------- //
 export function getHealthRecordsDue7Days(): MockHealthRecord[] {
   const db = loadDB();
@@ -267,5 +329,117 @@ export function getHealthRecordsByAnimalId(animalId: string): MockHealthRecord[]
 export function findSymptomReportById(id: string): MockSymptomReport | undefined {
   const db = loadDB();
   return db.symptom_reports.find((r) => r.id === id);
+}
+
+// ----------------- OUTBREAK FLAGS ----------------- //
+export function getOutbreakFlags(): MockOutbreakFlag[] {
+  const db = loadDB();
+  return db.outbreak_flags || [];
+}
+
+// ----------------- DISTRICT MANAGEMENT (BLOCK 1 & 4) ----------------- //
+export function getDistrictAdminActions(districtId?: string): MockDistrictAdminAction[] {
+  const db = loadDB();
+  const actions = db.district_admin_actions || [];
+  if (districtId) {
+    return actions.filter((a) => a.district_id.toLowerCase() === districtId.toLowerCase());
+  }
+  return actions;
+}
+
+export function saveDistrictAdminAction(
+  action: Omit<MockDistrictAdminAction, 'id' | 'created_at'>
+): MockDistrictAdminAction {
+  const db = loadDB();
+  if (!db.district_admin_actions) {
+    db.district_admin_actions = [];
+  }
+  const newAction: MockDistrictAdminAction = {
+    ...action,
+    id: `act-${Date.now()}`,
+    created_at: new Date().toISOString(),
+  };
+  db.district_admin_actions.push(newAction);
+  saveDB(db);
+  return newAction;
+}
+
+export function getDistrictStaffAssignments(districtId?: string): MockDistrictStaffAssignment[] {
+  const db = loadDB();
+  const assignments = db.district_staff_assignments || [];
+  if (districtId) {
+    return assignments.filter((a) => a.district_id.toLowerCase() === districtId.toLowerCase());
+  }
+  return assignments;
+}
+
+export function upsertDistrictStaffAssignment(
+  districtId: string,
+  userId: string,
+  role: string
+): MockDistrictStaffAssignment {
+  const db = loadDB();
+  if (!db.district_staff_assignments) {
+    db.district_staff_assignments = [];
+  }
+  const existingIdx = db.district_staff_assignments.findIndex(
+    (a) => a.district_id.toLowerCase() === districtId.toLowerCase() && a.user_id === userId
+  );
+
+  const now = new Date().toISOString();
+  if (existingIdx >= 0) {
+    db.district_staff_assignments[existingIdx].role = role;
+    db.district_staff_assignments[existingIdx].assigned_at = now;
+    saveDB(db);
+    return db.district_staff_assignments[existingIdx];
+  }
+
+  const newAssignment: MockDistrictStaffAssignment = {
+    id: `staff-${Date.now()}`,
+    district_id: districtId,
+    user_id: userId,
+    role,
+    assigned_at: now,
+  };
+  db.district_staff_assignments.push(newAssignment);
+  saveDB(db);
+  return newAssignment;
+}
+
+export function getDistrictLatestOverride(districtName: string): 'low' | 'medium' | 'high' | 'critical' | null {
+  const actions = getDistrictAdminActions(districtName);
+  const overrides = actions
+    .filter((a) => a.action_type === 'risk_override' && a.override_level)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  return overrides[0]?.override_level || null;
+}
+
+// ----------------- TRIAGE TICKETS & CASE TRACKING ----------------- //
+export function saveTriageTicket(ticket: MockTriageTicket): MockTriageTicket {
+  const db = loadDB();
+  if (!db.triage_tickets) {
+    db.triage_tickets = [];
+  }
+  const existingIdx = db.triage_tickets.findIndex((t) => t.ticket_id === ticket.ticket_id);
+  if (existingIdx >= 0) {
+    db.triage_tickets[existingIdx] = ticket;
+  } else {
+    db.triage_tickets.unshift(ticket);
+  }
+  saveDB(db);
+  return ticket;
+}
+
+export function findTriageTicket(ticketId: string): MockTriageTicket | undefined {
+  const db = loadDB();
+  const tickets = db.triage_tickets || [];
+  return tickets.find(
+    (t) => t.ticket_id.toLowerCase() === ticketId.toLowerCase() || t.report_id === ticketId
+  );
+}
+
+export function getAllTriageTickets(): MockTriageTicket[] {
+  const db = loadDB();
+  return db.triage_tickets || [];
 }
 

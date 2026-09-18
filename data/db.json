@@ -149,6 +149,22 @@
       "id": "anim-1789049635150",
       "qr_code_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAARPSURBVO3BMY4kyREAQfdE///LzhUohJSLQvUMj4cwsz9Y678Oaw2HtYbDWsNhreGw1nBYazisNXz4C5XfVHGjMlXcqEwVNypTxaTyRsWk8psqbg5rDYe1hsNaw4eHKr5J5YmKSWWqmComlZuKSWWqmFSmijcqvknlicNaw2Gt4bDW8OEllScqnlB5Q+UJlanipmJSual4QuWJijcOaw2HtYbDWsOHf7mKSWWqmFRuVKaKm4r/J4e1hsNaw2Gt4cP/mYpJZVKZKm5UpoonVP5NDmsNh7WGw1rDh5cqfpPKEyo3FTcqNxU/qeI3HdYaDmsNh7WGDw+p/C9VTCpTxaQyVUwqU8VNxaQyVUwqU8WNyv/SYa3hsNZwWGv48BcV/2QVNxU3FZPKGypPVPyTHNYaDmsNh7WGD3+hMlVMKt9UMVXcqEwVNypTxRMqNxWTyo3KN1W8cVhrOKw1HNYaPnxZxRsqNxVTxY3KjcpNxaRyo/KTKp5QmSpuDmsNh7WGw1qD/cEXqdxUTCrfVDGpTBU3Kk9U3KhMFU+oTBU/6bDWcFhrOKw1fHhI5aZiUrmpmFTeUHmj4g2Vb6qYVKaKSWWqeOKw1nBYazisNXz4MpUblZuKJ1S+SeWJipuKn6QyVbxxWGs4rDUc1hrsD36RylQxqUwVk8pU8YTKVPFNKj+p4gmVqeLmsNZwWGs4rDXYH1yo3FTcqEwVk8pNxY3KT6qYVKaKG5Wp4kZlqphUbireOKw1HNYaDmsN9gcPqDxR8YTKTcWNylQxqUwVk8pUcaPyRsWNylRxozJVPHFYazisNRzWGuwPvkjlpmJSmSomlZuKSeWmYlJ5o+KbVKaKSeWm4o3DWsNhreGw1vDhL1RuKt6omFSmikllUnmjYlKZKm5UfpLKVDGp3KhMFTeHtYbDWsNhreHDQxXfpDJVvFExqbyhMlVMFU+o/KaKJw5rDYe1hsNaw4eXVJ5QmSpuVKaKSWVSmSpuVKaKSeUJlScqblRuKiaVqeKJw1rDYa3hsNZgf3ChMlXcqNxUTCo3FU+o3FS8oTJVTCo/qWJSeaLi5rDWcFhrOKw12B/8g6lMFZPKVDGpPFHxTSpTxRMq31Rxc1hrOKw1HNYaPvyFym+qmComlanim1R+k8pU8UbFG4e1hsNaw2Gt4cNDFd+kcqMyVUwqb1RMKlPFjcpUMancVDxRcaMyVTxxWGs4rDUc1ho+vKTyRMUbKlPFpHJTMalMFZPKTcUTKt+k8k2HtYbDWsNhreHDv1zFTcUbKlPFTcUbKk+oTBU3h7WGw1rDYa3hw79MxaQyVUwqNxU3KpPKjcpvqnjisNZwWGs4rDV8eKniJ1XcqNxUPFExqUwVU8WNyk3FjcpNxaTyxmGt4bDWcFhr+PCQym9SeUNlqrhRmSomlaliUpkqfpLKVPHGYa3hsNZwWGuwP1jrvw5rDYe1hsNaw2Gt4bDWcFhrOKw1/AfG/SkgWFSXcwAAAABJRU5ErkJggg==",
       "created_at": "2026-09-10T14:13:55.150Z"
+    },
+    {
+      "tag_uid": "999900001111",
+      "species": "Cattle",
+      "breed": "Gir / Desi",
+      "sex": "Female",
+      "owner_id": "11111111-1111-4111-8111-111111111111",
+      "owner_name": "Farmer (Direct Report)",
+      "village": "Local Village",
+      "district": "Pune",
+      "gps_lat": 18.5204,
+      "gps_lng": 73.8567,
+      "health_status": "symptomatic",
+      "id": "anim-1789747057293",
+      "qr_code_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAARkSURBVO3BQY4jRxIAQfcE//9l3znoEKdsFMimRoswsz9Y6x+HtYbDWsNhreGw1nBYazisNRzWGl78QOWbKiaVm4pPUpkqJpV3VEwq31Rxc1hrOKw1HNYaXjxU8Ukq71C5qbhRmSomlZuKG5UnKj5J5YnDWsNhreGw1vDiTSpPVDxRMalMFZPKjcpU8UTFpDJVfJLKExXvOKw1HNYaDmsNL/5yKjcqU8VNxY3KVDGpTBWTylTxX3JYazisNRzWGl785SomlaliUrmpeEJlqnhCZar4mx3WGg5rDYe1hhdvqvimipuKG5Wp4qZiUnmi4h0V33RYazisNRzWGl48pPJNKlPFpDJVTCpTxaQyVUwqU8WkMlVMKlPFjcq/6bDWcFhrOKw1vPhBxf8TlaliUrlRmSomlanipuJvclhrOKw1HNYaXvxAZaqYVG4qJpUnKiaVG5Wp4omKSeUdKlPFpDJV3KhMFZPKTcXNYa3hsNZwWGt48YOKJyomlZuKSeWJiknlRuWm4gmVT1K5qbipmFSeOKw1HNYaDmsNL36gMlU8UXGjMlVMKjcqT1TcqNxUTCpTxY3KVDGpTBU3KjcVTxzWGg5rDYe1hhc/qPhNFZPKTcWkcqNyU/GbVG5UpopJZaqYKm5Upoqbw1rDYa3hsNbw4stUnqiYVKaKSeWm4h0qU8WkMlW8o2JSuamYKp44rDUc1hoOaw32Bw+o3FRMKlPFjcoTFTcq76iYVJ6ouFGZKp5QeaLi5rDWcFhrOKw1vPgylZuKG5VJ5abiRmWqmFTeofKEyk3FbzqsNRzWGg5rDS9+WcWkMlV8k8pUMalMFTcq76i4UbmpmFSmiicOaw2HtYbDWsOLX6YyVUwq76h4ouKmYlKZKm4qJpVPUpkqPumw1nBYazisNbx4qOJG5UZlqphUpop3qNxUvKPiiYoblaliUplUPumw1nBYazisNbz4gcpU8UkqU8WNyjsqblQ+qWJSeUJlqphUpop3HNYaDmsNh7WGFz+ouFG5qXhC5R0Vv0nliYqp4kZlqvimw1rDYa3hsNbw4iGVqWJSeULlpmJSeYfKVPFJFZPKO1S+6bDWcFhrOKw12B/8xVSmihuVd1R8kspU8YTKJ1XcHNYaDmsNh7WGFz9Q+aaKG5UnKiaVqeJGZaq4UXlCZap4omJSmSqeOKw1HNYaDmsNLx6q+CSVT6qYVKaKv0nFJ1VMKlPFzWGt4bDWcFhrePEmlScqnqi4UbmpuFGZKm5UpoqpYlKZVN5RMancVDxxWGs4rDUc1hpe/OVU3qHyhMpNxRMVk8pUMancqEwVNypTxc1hreGw1nBYa3jxH1NxozJVvEPlHSpTxRMVNypTxTsOaw2HtYbDWsOLN1X8popJZaqYKm5UpopvUpkqpopJ5aZiUpkqnjisNRzWGg5rDS8eUvkmlU+qmFSmiqniRuWTVKaKSeU3HdYaDmsNh7UG+4O1/nFYazisNRzWGg5rDYe1hsNaw2Gt4X8ESDYr/IoN7AAAAABJRU5ErkJggg==",
+      "created_at": "2026-09-18T15:57:37.293Z"
     }
   ],
   "symptom_reports": [
@@ -186,6 +202,98 @@
       "status": "triaged",
       "reported_at": "2026-09-06T14:13:04.750Z",
       "created_at": "2026-09-06T14:13:04.750Z"
+    },
+    {
+      "reported_by": "11111111-1111-4111-8111-111111111111",
+      "symptoms": [
+        "drooling",
+        "mouth_blisters",
+        "lameness"
+      ],
+      "media_urls": [],
+      "gps_lat": 18.5204,
+      "gps_lng": 73.8567,
+      "status": "triaged",
+      "id": "rep-1789747012205",
+      "reported_at": "2026-09-18T15:56:52.205Z",
+      "created_at": "2026-09-18T15:56:52.205Z"
+    },
+    {
+      "reported_by": "11111111-1111-4111-8111-111111111111",
+      "symptoms": [
+        "drooling",
+        "mouth_blisters",
+        "lameness"
+      ],
+      "media_urls": [],
+      "gps_lat": 18.5204,
+      "gps_lng": 73.8567,
+      "status": "triaged",
+      "id": "rep-1789747040500",
+      "reported_at": "2026-09-18T15:57:20.500Z",
+      "created_at": "2026-09-18T15:57:20.500Z"
+    },
+    {
+      "animal_id": "anim-default-1",
+      "reported_by": "919876543210",
+      "symptoms": [
+        "drooling",
+        "mouth_blisters"
+      ],
+      "media_urls": [],
+      "gps_lat": 18.5204,
+      "gps_lng": 73.8567,
+      "status": "triaged",
+      "id": "rep-1789747040514",
+      "reported_at": "2026-09-18T15:57:20.514Z",
+      "created_at": "2026-09-18T15:57:20.514Z"
+    },
+    {
+      "animal_id": "anim-1789747057293",
+      "reported_by": "11111111-1111-4111-8111-111111111111",
+      "symptoms": [
+        "drooling",
+        "mouth_blisters",
+        "lameness"
+      ],
+      "media_urls": [],
+      "gps_lat": 18.5204,
+      "gps_lng": 73.8567,
+      "status": "triaged",
+      "id": "rep-1789747171003",
+      "reported_at": "2026-09-18T15:59:31.003Z",
+      "created_at": "2026-09-18T15:59:31.003Z"
+    },
+    {
+      "animal_id": "anim-default-1",
+      "reported_by": "919876543210",
+      "symptoms": [
+        "drooling",
+        "mouth_blisters"
+      ],
+      "media_urls": [],
+      "gps_lat": 18.5204,
+      "gps_lng": 73.8567,
+      "status": "triaged",
+      "id": "rep-1789747171017",
+      "reported_at": "2026-09-18T15:59:31.017Z",
+      "created_at": "2026-09-18T15:59:31.017Z"
+    },
+    {
+      "animal_id": "anim-1789747057293",
+      "reported_by": "11111111-1111-4111-8111-111111111111",
+      "symptoms": [
+        "fever_high",
+        "drooling",
+        "mouth_blisters"
+      ],
+      "media_urls": [],
+      "gps_lat": 18.5204,
+      "gps_lng": 73.8567,
+      "status": "triaged",
+      "id": "rep-1789747444733",
+      "reported_at": "2026-09-18T16:04:04.733Z",
+      "created_at": "2026-09-18T16:04:04.733Z"
     }
   ],
   "outbreak_flags": [
@@ -208,6 +316,66 @@
       "risk_level": "high",
       "district": "Nashik",
       "created_at": "2026-09-06T14:13:04.750Z"
+    },
+    {
+      "id": "flag-1789747012205",
+      "symptom_report_id": "rep-1789747012205",
+      "predicted_disease": "Foot and Mouth Disease (FMD)",
+      "confidence_pct": 85,
+      "severity_score": 80,
+      "risk_level": "high",
+      "district": "Pune",
+      "created_at": "2026-09-18T15:56:52.205Z"
+    },
+    {
+      "id": "flag-1789747040500",
+      "symptom_report_id": "rep-1789747040500",
+      "predicted_disease": "Foot and Mouth Disease (FMD)",
+      "confidence_pct": 85,
+      "severity_score": 80,
+      "risk_level": "high",
+      "district": "Pune",
+      "created_at": "2026-09-18T15:57:20.500Z"
+    },
+    {
+      "id": "flag-1789747040514",
+      "symptom_report_id": "rep-1789747040514",
+      "predicted_disease": "Foot and Mouth Disease (FMD)",
+      "confidence_pct": 85,
+      "severity_score": 80,
+      "risk_level": "high",
+      "district": "Pune",
+      "created_at": "2026-09-18T15:57:20.514Z"
+    },
+    {
+      "id": "flag-1789747171003",
+      "symptom_report_id": "rep-1789747171003",
+      "predicted_disease": "Foot and Mouth Disease (FMD)",
+      "confidence_pct": 85,
+      "severity_score": 80,
+      "risk_level": "high",
+      "district": "Pune",
+      "created_at": "2026-09-18T15:59:31.003Z"
+    },
+    {
+      "id": "flag-1789747171017",
+      "symptom_report_id": "rep-1789747171017",
+      "predicted_disease": "Foot and Mouth Disease (FMD)",
+      "confidence_pct": 85,
+      "severity_score": 80,
+      "risk_level": "high",
+      "district": "Pune",
+      "created_at": "2026-09-18T15:59:31.017Z"
+    },
+    {
+      "id": "flag-1789747444733",
+      "symptom_report_id": "rep-1789747444733",
+      "predicted_disease": "Foot and Mouth Disease (FMD)",
+      "confidence_pct": 85,
+      "severity_score": 80,
+      "risk_level": "high",
+      "district": "Pune",
+      "created_at": "2026-09-18T16:04:04.733Z"
     }
   ],
   "lab_cases": [
@@ -241,6 +409,84 @@
       ],
       "completed_at": "2026-09-09T14:13:04.750Z",
       "created_at": "2026-09-06T14:13:04.750Z"
+    },
+    {
+      "id": "lab-1789747012205",
+      "symptom_report_id": "rep-1789747012205",
+      "sample_id": "LAB-20260918-5044",
+      "status": "collected",
+      "status_history": [
+        {
+          "status": "collected",
+          "updated_at": "2026-09-18T15:56:52.205Z"
+        }
+      ],
+      "created_at": "2026-09-18T15:56:52.205Z"
+    },
+    {
+      "id": "lab-1789747040500",
+      "symptom_report_id": "rep-1789747040500",
+      "sample_id": "LAB-20260918-3008",
+      "status": "collected",
+      "status_history": [
+        {
+          "status": "collected",
+          "updated_at": "2026-09-18T15:57:20.500Z"
+        }
+      ],
+      "created_at": "2026-09-18T15:57:20.500Z"
+    },
+    {
+      "id": "lab-1789747040514",
+      "symptom_report_id": "rep-1789747040514",
+      "sample_id": "LAB-20260918-5336",
+      "status": "collected",
+      "status_history": [
+        {
+          "status": "collected",
+          "updated_at": "2026-09-18T15:57:20.514Z"
+        }
+      ],
+      "created_at": "2026-09-18T15:57:20.514Z"
+    },
+    {
+      "id": "lab-1789747171003",
+      "symptom_report_id": "rep-1789747171003",
+      "sample_id": "LAB-20260918-4434",
+      "status": "collected",
+      "status_history": [
+        {
+          "status": "collected",
+          "updated_at": "2026-09-18T15:59:31.003Z"
+        }
+      ],
+      "created_at": "2026-09-18T15:59:31.003Z"
+    },
+    {
+      "id": "lab-1789747171017",
+      "symptom_report_id": "rep-1789747171017",
+      "sample_id": "LAB-20260918-2138",
+      "status": "collected",
+      "status_history": [
+        {
+          "status": "collected",
+          "updated_at": "2026-09-18T15:59:31.017Z"
+        }
+      ],
+      "created_at": "2026-09-18T15:59:31.017Z"
+    },
+    {
+      "id": "lab-1789747444733",
+      "symptom_report_id": "rep-1789747444733",
+      "sample_id": "LAB-20260918-9307",
+      "status": "collected",
+      "status_history": [
+        {
+          "status": "collected",
+          "updated_at": "2026-09-18T16:04:04.733Z"
+        }
+      ],
+      "created_at": "2026-09-18T16:04:04.733Z"
     }
   ],
   "health_records": [
@@ -267,6 +513,222 @@
   ],
   "community_posts": [
     {
+      "district": "Gadchiroli",
+      "summary": "Gadchiroli जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171121-444",
+      "created_at": "2026-09-18T15:59:31.121Z"
+    },
+    {
+      "district": "Chandrapur",
+      "summary": "Chandrapur जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171118-842",
+      "created_at": "2026-09-18T15:59:31.118Z"
+    },
+    {
+      "district": "Gondia",
+      "summary": "Gondia जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171116-726",
+      "created_at": "2026-09-18T15:59:31.116Z"
+    },
+    {
+      "district": "Bhandara",
+      "summary": "Bhandara जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171113-803",
+      "created_at": "2026-09-18T15:59:31.113Z"
+    },
+    {
+      "district": "Wardha",
+      "summary": "Wardha जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171110-103",
+      "created_at": "2026-09-18T15:59:31.110Z"
+    },
+    {
+      "district": "Nagpur",
+      "summary": "Nagpur जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171106-103",
+      "created_at": "2026-09-18T15:59:31.106Z"
+    },
+    {
+      "district": "Yavatmal",
+      "summary": "Yavatmal जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171101-404",
+      "created_at": "2026-09-18T15:59:31.101Z"
+    },
+    {
+      "district": "Buldhana",
+      "summary": "Buldhana जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171097-147",
+      "created_at": "2026-09-18T15:59:31.097Z"
+    },
+    {
+      "district": "Washim",
+      "summary": "Washim जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171091-64",
+      "created_at": "2026-09-18T15:59:31.091Z"
+    },
+    {
+      "district": "Akola",
+      "summary": "Akola जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171087-183",
+      "created_at": "2026-09-18T15:59:31.087Z"
+    },
+    {
+      "district": "Amravati",
+      "summary": "Amravati जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171084-848",
+      "created_at": "2026-09-18T15:59:31.084Z"
+    },
+    {
+      "district": "Hingoli",
+      "summary": "Hingoli जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171081-659",
+      "created_at": "2026-09-18T15:59:31.081Z"
+    },
+    {
+      "district": "Parbhani",
+      "summary": "Parbhani जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171078-775",
+      "created_at": "2026-09-18T15:59:31.078Z"
+    },
+    {
+      "district": "Nanded",
+      "summary": "Nanded जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171075-421",
+      "created_at": "2026-09-18T15:59:31.075Z"
+    },
+    {
+      "district": "Dharashiv",
+      "summary": "Dharashiv जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171072-824",
+      "created_at": "2026-09-18T15:59:31.072Z"
+    },
+    {
+      "district": "Latur",
+      "summary": "Latur जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171070-288",
+      "created_at": "2026-09-18T15:59:31.070Z"
+    },
+    {
+      "district": "Beed",
+      "summary": "Beed जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171068-248",
+      "created_at": "2026-09-18T15:59:31.068Z"
+    },
+    {
+      "district": "Jalna",
+      "summary": "Jalna जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171066-41",
+      "created_at": "2026-09-18T15:59:31.066Z"
+    },
+    {
+      "district": "Chhatrapati Sambhajinagar",
+      "summary": "Chhatrapati Sambhajinagar जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171064-890",
+      "created_at": "2026-09-18T15:59:31.064Z"
+    },
+    {
+      "district": "Ahmednagar",
+      "summary": "Ahmednagar जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171062-920",
+      "created_at": "2026-09-18T15:59:31.062Z"
+    },
+    {
+      "district": "Jalgaon",
+      "summary": "Jalgaon जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171059-749",
+      "created_at": "2026-09-18T15:59:31.059Z"
+    },
+    {
+      "district": "Nandurbar",
+      "summary": "Nandurbar जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171056-835",
+      "created_at": "2026-09-18T15:59:31.056Z"
+    },
+    {
+      "district": "Dhule",
+      "summary": "Dhule जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171054-18",
+      "created_at": "2026-09-18T15:59:31.054Z"
+    },
+    {
+      "district": "Nashik",
+      "summary": "Nashik जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171052-665",
+      "created_at": "2026-09-18T15:59:31.052Z"
+    },
+    {
+      "district": "Kolhapur",
+      "summary": "Kolhapur जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171050-688",
+      "created_at": "2026-09-18T15:59:31.050Z"
+    },
+    {
+      "district": "Solapur",
+      "summary": "Solapur जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171046-886",
+      "created_at": "2026-09-18T15:59:31.046Z"
+    },
+    {
+      "district": "Sangli",
+      "summary": "Sangli जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171044-177",
+      "created_at": "2026-09-18T15:59:31.044Z"
+    },
+    {
+      "district": "Satara",
+      "summary": "Satara जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171041-933",
+      "created_at": "2026-09-18T15:59:31.041Z"
+    },
+    {
+      "district": "Pune",
+      "summary": "Pune जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171038-922",
+      "created_at": "2026-09-18T15:59:31.038Z"
+    },
+    {
+      "district": "Sindhudurg",
+      "summary": "Sindhudurg जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171036-548",
+      "created_at": "2026-09-18T15:59:31.036Z"
+    },
+    {
+      "district": "Ratnagiri",
+      "summary": "Ratnagiri जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171034-642",
+      "created_at": "2026-09-18T15:59:31.034Z"
+    },
+    {
+      "district": "Raigad",
+      "summary": "Raigad जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171032-990",
+      "created_at": "2026-09-18T15:59:31.032Z"
+    },
+    {
+      "district": "Palghar",
+      "summary": "Palghar जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171030-543",
+      "created_at": "2026-09-18T15:59:31.030Z"
+    },
+    {
+      "district": "Thane",
+      "summary": "Thane जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171027-71",
+      "created_at": "2026-09-18T15:59:31.028Z"
+    },
+    {
+      "district": "Mumbai Suburban",
+      "summary": "Mumbai Suburban जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171025-761",
+      "created_at": "2026-09-18T15:59:31.025Z"
+    },
+    {
+      "district": "Mumbai City",
+      "summary": "Mumbai City जिल्ह्यात प्रादुर्भाव निर्देशांक वाढला आहे (11/100, 50th percentile). पशुपालकांनी तातडीने जनावरांचे विलगीकरण करावे व जनावरांची बाजारातील ने-आण थांबवावी. आपत्कालीन मदत: 1962",
+      "id": "post-1789747171022-264",
+      "created_at": "2026-09-18T15:59:31.022Z"
+    },
+    {
       "id": "post-601",
       "district": "Pune",
       "summary": "इशारा: शिरूर व खेड तालुक्यात एफएमडी (लाळ्या खुरकूत) चा प्रादुर्भाव आढळला आहे. बाधित जनावरांना वेगळे ठेवा व जंतूनाशक फवारणी करा.",
@@ -292,6 +754,267 @@
       "summary_hi": "आपातकालीन अलर्ट: पैठण तालुके में एंथ्रेक्स से संदिग्ध मृत्यु की सूचना। मृत पशु को खुले में न फेंकें और संपर्क से बचें।",
       "summary_mr": "इर्मजन्सी अलर्ट: पैठण तालुक्यात अँथ्रॅक्स संशयित मृत्यूची नोंद. मृत जनावराची उघड्यावर विल्हेवाट लावू नका व संपर्क टाळा.",
       "created_at": "2026-09-05T14:13:04.750Z"
+    },
+    {
+      "id": "post-1789747012205",
+      "source_symptom_report_id": "rep-1789747012205",
+      "district": "Pune",
+      "summary": "इशारा: Pune भागात Foot and Mouth Disease (FMD) चे लक्षण आढळले आहेत. पशुपालकांनी दक्षता घ्यावी.",
+      "created_at": "2026-09-18T15:56:52.205Z"
+    },
+    {
+      "id": "post-1789747040500",
+      "source_symptom_report_id": "rep-1789747040500",
+      "district": "Pune",
+      "summary": "इशारा: Pune भागात Foot and Mouth Disease (FMD) चे लक्षण आढळले आहेत. पशुपालकांनी दक्षता घ्यावी.",
+      "created_at": "2026-09-18T15:57:20.500Z"
+    },
+    {
+      "id": "post-1789747040514",
+      "source_symptom_report_id": "rep-1789747040514",
+      "district": "Pune",
+      "summary": "इशारा: Pune भागात Foot and Mouth Disease (FMD) चे लक्षण आढळले आहेत. पशुपालकांनी दक्षता घ्यावी.",
+      "created_at": "2026-09-18T15:57:20.514Z"
+    },
+    {
+      "id": "post-1789747171003",
+      "source_symptom_report_id": "rep-1789747171003",
+      "district": "Pune",
+      "summary": "इशारा: Pune भागात Foot and Mouth Disease (FMD) चे लक्षण आढळले आहेत. पशुपालकांनी दक्षता घ्यावी.",
+      "created_at": "2026-09-18T15:59:31.003Z"
+    },
+    {
+      "id": "post-1789747171017",
+      "source_symptom_report_id": "rep-1789747171017",
+      "district": "Pune",
+      "summary": "इशारा: Pune भागात Foot and Mouth Disease (FMD) चे लक्षण आढळले आहेत. पशुपालकांनी दक्षता घ्यावी.",
+      "created_at": "2026-09-18T15:59:31.017Z"
+    },
+    {
+      "id": "post-1789747444733",
+      "source_symptom_report_id": "rep-1789747444733",
+      "district": "Pune",
+      "summary": "इशारा: Pune भागात Foot and Mouth Disease (FMD) चे लक्षण आढळले आहेत. पशुपालकांनी दक्षता घ्यावी.",
+      "created_at": "2026-09-18T16:04:04.733Z"
+    }
+  ],
+  "district_staff_assignments": [
+    {
+      "id": "staff-1789744043188",
+      "district_id": "Pune",
+      "user_id": "22222222-2222-4222-8222-222222222222",
+      "role": "District Epidemiological Lead",
+      "assigned_at": "2026-09-18T15:07:23.188Z"
+    }
+  ],
+  "district_admin_actions": [
+    {
+      "district_id": "Pune",
+      "admin_id": "44444444-4444-4444-8444-444444444444",
+      "action_type": "intervention",
+      "notes": "Emergency ring vaccination campaign initiated across 12 border villages.",
+      "override_level": null,
+      "id": "act-1789744043196",
+      "created_at": "2026-09-18T15:07:23.196Z"
+    },
+    {
+      "district_id": "Pune",
+      "admin_id": "44444444-4444-4444-8444-444444444444",
+      "action_type": "risk_override",
+      "notes": "Local market intelligence indicates sudden surge in foot lesions.",
+      "override_level": "critical",
+      "id": "act-1789744043208",
+      "created_at": "2026-09-18T15:07:23.208Z"
+    }
+  ],
+  "triage_tickets": [
+    {
+      "ticket_id": "PK-596744",
+      "report_id": "rep-1789747444733",
+      "status": "officer_assigned",
+      "triage": {
+        "predictedDisease": "Inconclusive / General Malaise",
+        "diseaseCode": "INCONCLUSIVE",
+        "confidencePct": 0,
+        "severityScore": 10,
+        "riskLevel": "low",
+        "matchedSymptoms": [],
+        "totalDiseaseSymptoms": 0,
+        "allDiseaseScores": [],
+        "requiresOutbreakFlag": false,
+        "requiresLabCase": false,
+        "requiresCommunityNotice": false,
+        "isolationAdvice": "Monitor animal temperature and appetite. Provide clean water and soft fodder."
+      },
+      "sla_minutes": 180,
+      "sla_deadline": "2026-09-18T19:04:04.727Z",
+      "assigned_vet": {
+        "name": "Dr. Vijay Shinde",
+        "role": "Livestock Development Officer (LDO)",
+        "phone": "+91 98220 33333",
+        "vehicle_no": "MH-12-GV-1962",
+        "eta_minutes": 25
+      },
+      "dispensary": {
+        "name": "Government Veterinary Dispensary Grade I (Haveli Division)",
+        "address": "Near Taluka Panchayat Office, Maharashtra",
+        "helpline": "1962",
+        "distance_km": 4.8
+      },
+      "first_aid": [
+        "Isolate affected animal immediately in a clean, ventilated quarantine shed.",
+        "Wash mouth and hoof lesions with mild 0.1% potassium permanganate solution.",
+        "Provide clean lukewarm water, oral electrolytes, and soft digestible fodder.",
+        "Practice vector control using neem smoke to prevent fly/tick transmission."
+      ],
+      "tag_uid": "999900001111",
+      "symptoms": [
+        "fever_high",
+        "drooling",
+        "mouth_blisters"
+      ],
+      "created_at": "2026-09-18T16:04:05.678Z"
+    },
+    {
+      "ticket_id": "PK-196265",
+      "report_id": "rep-1789747171003",
+      "status": "officer_assigned",
+      "triage": {
+        "predictedDisease": "Inconclusive / General Malaise",
+        "diseaseCode": "INCONCLUSIVE",
+        "confidencePct": 0,
+        "severityScore": 10,
+        "riskLevel": "low",
+        "matchedSymptoms": [],
+        "totalDiseaseSymptoms": 0,
+        "allDiseaseScores": [],
+        "requiresOutbreakFlag": false,
+        "requiresLabCase": false,
+        "requiresCommunityNotice": false,
+        "isolationAdvice": "Monitor animal temperature and appetite. Provide clean water and soft fodder."
+      },
+      "sla_minutes": 180,
+      "sla_deadline": "2026-09-18T18:59:31.001Z",
+      "assigned_vet": {
+        "name": "डॉ. विजय शिंदे",
+        "role": "पशुधन विकास अधिकारी (LDO)",
+        "phone": "+91 98220 33333",
+        "vehicle_no": "MH-12-GV-1962",
+        "eta_minutes": 25
+      },
+      "dispensary": {
+        "name": "शासकीय पशुवैद्यकीय दवाखाना श्रेणी १ (हवेली तालुका)",
+        "address": "Near Taluka Panchayat Office, Maharashtra",
+        "helpline": "1962",
+        "distance_km": 4.8
+      },
+      "first_aid": [
+        "आजारी जनावराला इतर निरोगी जनावरांपासून ताबडतोब वेगळ्या हवेशीर गोठ्यात ठेवा.",
+        "तोंडातील किंवा पायातील फोडांवर पोटॅशियम परमँगनेट (लाल औषध) किंवा १% बोरिक ऍसिडचा सौम्य लेप लावा.",
+        "जनावरास पिण्यासाठी स्वच्छ कोमट पाणी व पचायला हलका मऊ हिरवा चारा द्या.",
+        "गोठ्यात माश्या व डास होऊ नयेत म्हणून कडुनिंबाचा धूर करा."
+      ],
+      "tag_uid": "999900001111",
+      "symptoms": [
+        "drooling",
+        "mouth_blisters",
+        "lameness"
+      ],
+      "created_at": "2026-09-18T15:59:31.005Z"
+    },
+    {
+      "ticket_id": "PK-244670",
+      "report_id": "rep-1789747040500",
+      "status": "officer_assigned",
+      "triage": {
+        "predictedDisease": "Inconclusive / General Malaise",
+        "diseaseCode": "INCONCLUSIVE",
+        "confidencePct": 0,
+        "severityScore": 10,
+        "riskLevel": "low",
+        "matchedSymptoms": [],
+        "totalDiseaseSymptoms": 0,
+        "allDiseaseScores": [],
+        "requiresOutbreakFlag": false,
+        "requiresLabCase": false,
+        "requiresCommunityNotice": false,
+        "isolationAdvice": "Monitor animal temperature and appetite. Provide clean water and soft fodder."
+      },
+      "sla_minutes": 180,
+      "sla_deadline": "2026-09-18T18:57:20.481Z",
+      "assigned_vet": {
+        "name": "डॉ. विजय शिंदे",
+        "role": "पशुधन विकास अधिकारी (LDO)",
+        "phone": "+91 98220 33333",
+        "vehicle_no": "MH-12-GV-1962",
+        "eta_minutes": 25
+      },
+      "dispensary": {
+        "name": "शासकीय पशुवैद्यकीय दवाखाना श्रेणी १ (हवेली तालुका)",
+        "address": "Near Taluka Panchayat Office, Maharashtra",
+        "helpline": "1962",
+        "distance_km": 4.8
+      },
+      "first_aid": [
+        "आजारी जनावराला इतर निरोगी जनावरांपासून ताबडतोब वेगळ्या हवेशीर गोठ्यात ठेवा.",
+        "तोंडातील किंवा पायातील फोडांवर पोटॅशियम परमँगनेट (लाल औषध) किंवा १% बोरिक ऍसिडचा सौम्य लेप लावा.",
+        "जनावरास पिण्यासाठी स्वच्छ कोमट पाणी व पचायला हलका मऊ हिरवा चारा द्या.",
+        "गोठ्यात माश्या व डास होऊ नयेत म्हणून कडुनिंबाचा धूर करा."
+      ],
+      "tag_uid": "999900001111",
+      "symptoms": [
+        "drooling",
+        "mouth_blisters",
+        "lameness"
+      ],
+      "created_at": "2026-09-18T15:57:20.502Z"
+    },
+    {
+      "ticket_id": "PK-204551",
+      "report_id": "rep-1789747012205",
+      "status": "officer_assigned",
+      "triage": {
+        "predictedDisease": "Inconclusive / General Malaise",
+        "diseaseCode": "INCONCLUSIVE",
+        "confidencePct": 0,
+        "severityScore": 10,
+        "riskLevel": "low",
+        "matchedSymptoms": [],
+        "totalDiseaseSymptoms": 0,
+        "allDiseaseScores": [],
+        "requiresOutbreakFlag": false,
+        "requiresLabCase": false,
+        "requiresCommunityNotice": false,
+        "isolationAdvice": "Monitor animal temperature and appetite. Provide clean water and soft fodder."
+      },
+      "sla_minutes": 180,
+      "sla_deadline": "2026-09-18T18:56:52.181Z",
+      "assigned_vet": {
+        "name": "डॉ. विजय शिंदे",
+        "role": "पशुधन विकास अधिकारी (LDO)",
+        "phone": "+91 98220 33333",
+        "vehicle_no": "MH-12-GV-1962",
+        "eta_minutes": 25
+      },
+      "dispensary": {
+        "name": "शासकीय पशुवैद्यकीय दवाखाना श्रेणी १ (हवेली तालुका)",
+        "address": "Near Taluka Panchayat Office, Maharashtra",
+        "helpline": "1962",
+        "distance_km": 4.8
+      },
+      "first_aid": [
+        "आजारी जनावराला इतर निरोगी जनावरांपासून ताबडतोब वेगळ्या हवेशीर गोठ्यात ठेवा.",
+        "तोंडातील किंवा पायातील फोडांवर पोटॅशियम परमँगनेट (लाल औषध) किंवा १% बोरिक ऍसिडचा सौम्य लेप लावा.",
+        "जनावरास पिण्यासाठी स्वच्छ कोमट पाणी व पचायला हलका मऊ हिरवा चारा द्या.",
+        "गोठ्यात माश्या व डास होऊ नयेत म्हणून कडुनिंबाचा धूर करा."
+      ],
+      "tag_uid": "999900001111",
+      "symptoms": [
+        "drooling",
+        "mouth_blisters",
+        "lameness"
+      ],
+      "created_at": "2026-09-18T15:56:52.208Z"
     }
   ]
 }

@@ -12,6 +12,7 @@ import {
   Radio,
   ArrowRight,
   Lock,
+  PhoneCall,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -106,24 +107,119 @@ export default function HomePage() {
             {t('hero_desc')}
           </p>
 
-          {/* Quick Action Buttons */}
-          <div className="max-w-xl mx-auto pt-4 flex flex-wrap items-center justify-center gap-3">
-            <Link href="/login">
-              <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6">
-                <Lock className="mr-2 h-4 w-4" />
-                {t('sign_in')}
-              </Button>
+          {/* Emergency 1962 Toll-Free & Instant Frictionless Report Hero Banner */}
+          <div className="max-w-2xl mx-auto bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white p-4 sm:p-5 rounded-2xl shadow-lg border border-red-400/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl shrink-0">
+                <ShieldAlert className="h-6 w-6 text-white animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    {language === 'mr' ? '२४x७ शासकीय फिरते रुग्णालय (MVU)' : language === 'hi' ? '२४x७ सरकारी मोबाइल पशु चिकित्सा' : '24x7 Emergency MVU'}
+                  </span>
+                  <span className="text-xs text-white/95 font-mono font-bold">1962 Toll-Free</span>
+                </div>
+                <h2 className="text-base sm:text-lg font-black mt-0.5">
+                  {language === 'mr' ? 'तातडीने जनावरांच्या आजाराची नोंद करा' : language === 'hi' ? 'पशु रोग आपातकालीन सूचना दर्ज करें' : 'Emergency Livestock Symptom Reporting'}
+                </h2>
+                <p className="text-xs text-white/85">
+                  {language === 'mr' ? 'कोणताही लॉगिन नको • आवाजाने/फोटोने नोंदवा • ३० मिनिटांत पशुवैद्यक रवाना' : language === 'hi' ? 'लॉगिन जरूरी नहीं • फोटो या आवाज से तुरंत दर्ज करें • 30 मिनट में डॉक्टर' : 'Zero login needed • Voice & photo support • Instant 30-min SLA dispatch'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+              <Link href="/report" className="w-full sm:w-auto">
+                <Button className="w-full sm:w-auto bg-white text-red-700 hover:bg-slate-100 font-bold text-xs sm:text-sm px-4 py-2.5 shadow-md">
+                  <ShieldAlert className="mr-1.5 h-4 w-4 text-red-600" />
+                  {language === 'mr' ? 'नोंदणी करा (Report)' : language === 'hi' ? 'रिपोर्ट करें' : 'Report Now'}
+                </Button>
+              </Link>
+              <a href="tel:1962" className="shrink-0">
+                <Button variant="outline" className="border-white/50 text-white hover:bg-white/10 font-bold text-xs sm:text-sm px-3 py-2.5">
+                  <PhoneCall className="mr-1 h-3.5 w-3.5" />
+                  1962
+                </Button>
+              </a>
+            </div>
+          </div>
+
+          {/* Two Distinct Persona Split Entry Paths */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto pt-2 text-left">
+            {/* 1. Farmer Path: Report a Problem (Routes directly to /chatbot, no login required) */}
+            <Link
+              href="/chatbot"
+              className="group p-5 rounded-2xl border-2 border-emerald-500/80 bg-white dark:bg-zinc-900 shadow-md hover:shadow-xl hover:border-emerald-600 transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300">
+                    <HeartPulse className="h-6 w-6" />
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
+                    Farmer Portal • शेतकरी
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 transition-colors flex items-center gap-1.5">
+                  {t('farmer_entry_title') || 'Report a Problem'}
+                  <ArrowRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                  {t('farmer_entry_subtitle') || 'No login required • AI Symptom Screening & Disease Prediction with photo upload & voice'}
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t flex items-center text-xs font-bold text-emerald-700 dark:text-emerald-400">
+                <span>Start Symptom Screening</span>
+                <ArrowRight className="h-3.5 w-3.5 ml-1" />
+              </div>
             </Link>
+
+            {/* 2. Authority Path: Authority Login (Routes to role-gated dashboard) */}
+            <Link
+              href="/login"
+              className="group p-5 rounded-2xl border-2 border-slate-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-md hover:shadow-xl hover:border-slate-500 transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-slate-200">
+                    <Lock className="h-6 w-6" />
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-zinc-700 px-2 py-0.5 rounded-full">
+                    Official • अधिकारी
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors flex items-center gap-1.5">
+                  {t('authority_entry_title') || 'Authority Login'}
+                  <ArrowRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                  {t('authority_entry_subtitle') || 'Veterinarians, Lab Technicians & State Officers • Access role-gated clinical dashboard'}
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t flex items-center text-xs font-bold text-slate-700 dark:text-slate-300">
+                <span>Sign in to Dashboard</span>
+                <ArrowRight className="h-3.5 w-3.5 ml-1" />
+              </div>
+            </Link>
+          </div>
+
+          {/* Quick Public Explorer Navigation (Preserved Existing Routes) */}
+          <div className="max-w-xl mx-auto pt-2 flex flex-wrap items-center justify-center gap-3">
             <Link href="/heatmap">
-              <Button size="lg" variant="outline" className="font-semibold px-6">
-                <MapPin className="mr-2 h-4 w-4" />
+              <Button size="sm" variant="outline" className="text-xs font-semibold px-4">
+                <MapPin className="mr-1.5 h-3.5 w-3.5" />
                 {t('nav_heatmap')}
               </Button>
             </Link>
             <Link href="/community">
-              <Button size="lg" variant="outline" className="font-semibold px-6">
-                <Radio className="mr-2 h-4 w-4" />
+              <Button size="sm" variant="outline" className="text-xs font-semibold px-4">
+                <Radio className="mr-1.5 h-3.5 w-3.5" />
                 {t('nav_community')}
+              </Button>
+            </Link>
+            <Link href="/channels">
+              <Button size="sm" variant="outline" className="text-xs font-semibold px-4">
+                {t('nav_channels') || 'Channels & IVR'}
               </Button>
             </Link>
           </div>
@@ -221,7 +317,7 @@ export default function HomePage() {
           <p>© 2026 Department of Animal Husbandry, Government of Maharashtra</p>
           <div className="flex items-center gap-4">
             <Link href="/login" className="hover:underline">Portal Sign In</Link>
-            <Link href="/community" className="hover:underline">Advisories</Link>
+            <Link href="/community" className="hover:underline">Advisories</Link>   
             <Link href="/heatmap" className="hover:underline">Surveillance Map</Link>
           </div>
         </div>

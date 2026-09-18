@@ -23,22 +23,28 @@ Pashudhan Kavach is an intelligent livestock disease surveillance, epidemic earl
 │   │   ├── healthz/          # Health check endpoint
 │   │   ├── auth/             # User registration & authentication
 │   │   ├── animals/          # Animal registration & digital health cards
-│   │   ├── symptom-reports/  # Disease reporting & triage analysis
+│   │   ├── chatbot/          # Multimodal Gemini diagnosis & MobileNet CV signals
+│   │   ├── cron/             # 36-district village outbreak broadcast cron
+│   │   ├── districts/        # District command telemetry, staff & risk overrides
+│   │   ├── geo/              # 5-factor weighted GIS heatmap & spatial clusters
+│   │   ├── symptoms/         # Instant triage & SLA ticket dispatch (PK-XXXXXX)
+│   │   ├── webhooks/         # WhatsApp Cloud API webhook handshake & auto-reply
 │   │   └── public/           # Unauthenticated public verification (QR code)
+│   ├── (farmer & public)
+│   │   ├── report/           # Zero-login frictionless symptom reporting page
+│   │   ├── reports/[id]/track# Visual delivery-app case tracker & offline queue
+│   │   ├── chatbot/          # AI conversational & live camera viewfinder
+│   │   ├── channels/         # 4-channel delivery hub & browser IVR demo
+│   │   └── heatmap/          # Interactive GIS epidemic surveillance map
 │   ├── globals.css
 │   ├── layout.tsx
-│   └── page.tsx
+│   └── page.tsx              # Persona-split hero & 1962 emergency banner
 ├── lib/
 │   ├── auth.ts               # Session retrieval & RBAC gating
-│   ├── api-response.ts       # Unified JSON responses
-│   ├── validation.ts         # Zod schemas, coordinates, pagination
-│   ├── email.ts              # Resend integration
-│   ├── services/             # Deterministic triage & surveillance engines
-│   └── supabase/
-│       ├── client.ts         # Browser client
-│       └── server.ts         # Authenticated & Admin server clients
-├── supabase/
-│   └── migrations/           # SQL database migrations & RLS policies
+│   ├── offlineStore.ts       # Native browser IndexedDB store-and-forward queue
+│   ├── constants/            # Districts & 12-symptom clinical catalog (mr/hi/en)
+│   ├── services/             # Deterministic triage, risk engine, weather & MobileNet
+│   └── persistent-store.ts   # Dual cloud PostgreSQL + local offline store
 └── types/
     └── database.types.ts     # TypeScript database schemas & entity models
 ```

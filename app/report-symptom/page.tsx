@@ -11,6 +11,10 @@ import {
   FlaskConical,
   Radio,
   Info,
+  Mic,
+  MicOff,
+  Volume2,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +23,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { DIAGNOSTIC_SYMPTOMS, GENERAL_SYMPTOMS } from '@/lib/validation';
 import { REPORT_SYMPTOM_ROLES } from '@/lib/role-features';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
 
 export default function ReportSymptomPage() {
   const { user, loading: authLoading, t } = useAuth();
@@ -31,6 +36,55 @@ export default function ReportSymptomPage() {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [triageResult, setTriageResult] = useState<any | null>(null);
+  const [voiceSpokenText, setVoiceSpokenText] = useState('');
+
+  const matchSymptomsFromSpeech = (spoken: string) => {
+    const text = spoken.toLowerCase();
+    const matched: string[] = [];
+
+    const symptomPatterns: Record<string, string[]> = {
+      fever_high: ['ताप', 'fever', 'बुखार', 'गरम'],
+      drooling: ['लाळ', 'drool', 'saliva', 'लार'],
+      mouth_blisters: ['तोंडात फोड', 'जीभ', 'mouth blister', 'छाले', 'फोड'],
+      hoof_blisters: ['खुर', 'hoof', 'foot', 'पायात फोड', 'खुरां'],
+      lameness: ['लंगड', 'lame', 'limp', 'लंगड़ा'],
+      nodular_skin_lesions: ['गाठ', 'गाठी', 'lump', 'nodule', 'लंपी', 'गांठ'],
+      swollen_lymph_nodes: ['ग्रंथी', 'lymph'],
+      severe_diarrhea: ['जुलाब', 'अतिसार', 'diarrhea', 'दस्त'],
+      respiratory_distress: ['श्वास', 'धाप', 'breath', 'gasp', 'साँस'],
+      nasal_discharge: ['शेंबूड', 'नाक', 'nasal', 'discharge'],
+      unclotted_dark_blood_discharge: ['रक्त', 'blood', 'खून'],
+      throat_swelling: ['गळा', 'मान', 'throat', 'swelling'],
+    };
+
+    for (const [symId, keywords] of Object.entries(symptomPatterns)) {
+      if (keywords.some((kw) => text.includes(kw))) {
+        matched.push(symId);
+      }
+    }
+
+    if (matched.length > 0) {
+      setSelectedSymptoms((prev) => Array.from(new Set([...prev, ...matched])));
+      toast.success(
+        `${matched.length} लक्षणे आवाजावरून निवडली गेली (${matched.length} symptoms matched from speech)`
+      );
+    }
+  };
+
+  const {
+    isListening,
+    toggleListening,
+    isSupported: voiceSupported,
+  } = useVoiceInput({
+    language: (user?.preferred_language as any) || 'mr',
+    onTranscriptChange: (spoken) => {
+      setVoiceSpokenText(spoken);
+    },
+    onFinalTranscript: (finalSpoken) => {
+      setVoiceSpokenText(finalSpoken);
+      matchSymptomsFromSpeech(finalSpoken);
+    },
+  });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -260,11 +314,63 @@ export default function ReportSymptomPage() {
 
             {/* Diagnostic Symptoms Checklist */}
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold text-red-700 dark:text-red-400">
-                  {t('diagnostic_symptoms_title')}
-                </CardTitle>
+              <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <CardTitle className="text-base font-bold text-red-700 dark:text-red-400">
+                    {t('diagnostic_symptoms_title')}
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    चेकबॉक्सेस निवडा किंवा माइक बटणावर क्लिक करून लक्षणे बोला
+                  </CardDescription>
+                </div>
+
+                {/* Voice Input Trigger Button */}
+                <Button
+                  type="button"
+                  onClick={() => toggleListening()}
+                  className={`text-xs h-9 px-3.5 flex items-center gap-2 transition-all ${
+                    isListening
+                      ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse ring-2 ring-red-400'
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                  }`}
+                >
+                  {isListening ? (
+                    <>
+                      <MicOff className="h-4 w-4" />
+                      <span>बोलणे थांबवा (Stop)</span>
+                    </>
+                  ) : (
+                    <>
+                      <Mic className="h-4 w-4" />
+                      <span>आवाजाद्वारे सांगा (Voice Dictate)</span>
+                    </>
+                  )}
+                </Button>
               </CardHeader>
+
+              {/* Spoken Voice Transcript Banner */}
+              {(isListening || voiceSpokenText) && (
+                <div className="mx-6 mb-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs space-y-1">
+                  <div className="flex items-center justify-between text-emerald-800 dark:text-emerald-300 font-semibold">
+                    <span className="flex items-center gap-1.5">
+                      <Volume2 className="h-3.5 w-3.5 text-emerald-600" />
+                      {isListening ? 'माइक सुरू आहे... (Listening to voice)' : 'आवाज टिपला गेला (Voice Captured)'}
+                    </span>
+                    {voiceSpokenText && (
+                      <button
+                        type="button"
+                        onClick={() => setVoiceSpokenText('')}
+                        className="text-[11px] text-muted-foreground hover:text-red-600"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-foreground italic bg-white dark:bg-zinc-900 p-2 rounded-lg border font-mono">
+                    &quot;{voiceSpokenText || 'कृपया आपल्या जनावराची लक्षणे बोला...'}&quot;
+                  </p>
+                </div>
+              )}
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {DIAGNOSTIC_SYMPTOMS.map((sym) => {
