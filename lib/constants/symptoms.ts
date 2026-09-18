@@ -188,10 +188,88 @@ export function getSymptomById(id: string): SymptomDescriptor | undefined {
   return CLINICAL_SYMPTOMS_CATALOG.find((s) => s.id === id || s.key === id);
 }
 
+const NEGATION_PATTERNS = [
+  'नाही', 'नाहीत', 'नव्हता', 'नव्हती', 'नव्हते', 'नसून', 'मुळीच नाही',
+  'नहीं', 'नही', 'ना', 'बिना',
+  'no', 'not', 'none', 'without', 'never', 'absent',
+  'nahi', 'nahin', 'nhi',
+];
+
+function isKeywordNegated(text: string, kwIndex: number, kwLength: number): boolean {
+  // Look 25 characters before and after the keyword
+  const beforeSlice = text.substring(Math.max(0, kwIndex - 25), kwIndex).toLowerCase();
+  const afterSlice = text.substring(kwIndex + kwLength, Math.min(text.length, kwIndex + kwLength + 25)).toLowerCase();
+
+  // Check if any negation token appears in beforeSlice or afterSlice
+  for (const neg of NEGATION_PATTERNS) {
+    // Check after: e.g. "ताप नाही", "fever nahi", "blisters none"
+    if (afterSlice.includes(neg)) {
+      // Ensure there isn't a clause separator like comma, period, or 'पण'/'but' between them
+      const gap = afterSlice.substring(0, afterSlice.indexOf(neg));
+      if (!gap.includes('.') && !gap.includes(';') && !gap.includes('पण') && !gap.includes('परंतु') && !gap.includes('but') && !gap.includes('लेकिन')) {
+        return true;
+      }
+    }
+    // Check before: e.g. "no fever", "नाही ताप"
+    if (beforeSlice.includes(neg)) {
+      const negIdx = beforeSlice.lastIndexOf(neg);
+      const gap = beforeSlice.substring(negIdx + neg.length);
+      if (!gap.includes('.') && !gap.includes(';') && !gap.includes('पण') && !gap.includes('परंतु') && !gap.includes('but') && !gap.includes('लेकिन')) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+export function detectNegatedSymptoms(text: string): SymptomDescriptor[] {
+  const normalized = text.toLowerCase();
+  const negated: SymptomDescriptor[] = [];
+
+  for (const s of CLINICAL_SYMPTOMS_CATALOG) {
+    for (const kw of s.keywords) {
+      const idx = normalized.indexOf(kw.toLowerCase());
+      if (idx !== -1 && isKeywordNegated(normalized, idx, kw.length)) {
+        if (!negated.some((item) => item.id === s.id)) {
+          negated.push(s);
+        }
+        break;
+      }
+    }
+  }
+  return negated;
+}
+
 export function matchSymptomsFromText(text: string): SymptomDescriptor[] {
   const normalized = text.toLowerCase();
-  return CLINICAL_SYMPTOMS_CATALOG.filter((s) =>
-    s.keywords.some((kw) => normalized.includes(kw.toLowerCase()))
-  );
+  const matched: SymptomDescriptor[] = [];
+
+  for (const s of CLINICAL_SYMPTOMS_CATALOG) {
+    let hasPositiveMatch = false;
+    let hasNegation = false;
+
+    for (const kw of s.keywords) {
+      const kwLower = kw.toLowerCase();
+      let startPos = 0;
+      let idx: number;
+
+      while ((idx = normalized.indexOf(kwLower, startPos)) !== -1) {
+        if (isKeywordNegated(normalized, idx, kwLower.length)) {
+          hasNegation = true;
+        } else {
+          hasPositiveMatch = true;
+        }
+        startPos = idx + kwLower.length;
+      }
+    }
+
+    // Only include if there is a genuine positive mention and no negation overrides it
+    if (hasPositiveMatch && !hasNegation) {
+      matched.push(s);
+    }
+  }
+
+  return matched;
 }
+
 

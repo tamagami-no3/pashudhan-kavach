@@ -1,7 +1,7 @@
 # Pashudhan Kavach (पशुधन कवच) — Project Status, Audit & Accountability Log
 
 > **Document Purpose**: Complete, detailed, transparent log of all project progress, technologies used, working features, non-working/known limitations, completed work, and pending items for SIH 2026.  
-> **Last Updated**: 2026-09-17  
+> **Last Updated**: 2026-09-18 (Phase 8 Audit & Polish Completed)  
 > **Project Directory**: `c:\sih2026\project`
 
 ---
@@ -174,12 +174,16 @@
 | `lib/services/mobileNetClient.ts` | Lazy-loaded client-side MobileNet v2 singleton inference module | ✅ Done |
 | `app/api/chatbot/diagnose/route.ts` | Built diagnose POST API with visual_signal support, model fallback loop & rule fallback | ✅ Done |
 | `app/page.tsx` | Emergency 1962 banner + Persona split hero: Farmer Path vs Authority Path | ✅ Done |
-| `lib/services/riskEngine.ts` | 5-factor risk scoring engine (CaseRate, TrendSlope, VaccGap, Weather, NeighborSpillover) | ✅ Done |
-| `app/channels/page.tsx` | Built Omni-Channel Hub with Web Speech API IVR voice demo | ✅ Done |
-| `lib/translations.ts` | Added dictionary keys for persona split, chatbot, channels, and mobile navigation | ✅ Done |
+| `lib/services/riskEngine.ts` | 5-factor risk scoring engine + zero-case epidemiological gate | ✅ Done |
+| `app/channels/page.tsx` | Built Omni-Channel Hub with interactive smartphone IVR call simulator & DTMF dial tones | ✅ Done |
+| `lib/translations.ts` | Added dictionary keys for persona split, chatbot, channels, feature grid, and academic disclaimer | ✅ Done |
 | `app/api/lab-cases/route.ts` | Fixed RBAC role validation for Lab Techs, Vets, and Admins | ✅ Done |
 | `app/api/animals/[id]/route.ts` | Added persistent store fallback for animal lookup | ✅ Done |
 | `lib/persistent-store.ts` | Added helper functions and district management & triage ticket schema records | ✅ Done |
+| `app/report-symptom/page.tsx` | Replaced legacy duplicate report form with automated client redirect to `/report` | ✅ Done |
+| `app/api/auth/register/route.ts` | Locked public self-registration to `role: 'farmer'` preventing unauthorized escalation | ✅ Done |
+| `app/api/search/route.ts` | Sanitized PostgREST `.or(...)` filter query against delimiter injection | ✅ Done |
+| `app/reports/[id]/track/page.tsx` | Added simulated demo watermark to assigned officer card and linked helpline to 1962 | ✅ Done |
 | `TECHNICAL_ARCHITECTURE.md` | Comprehensive judge-facing technical dossier including 5-factor risk formula | ✅ Done |
 | `PROJECT_STATUS.md` | Comprehensive project status, audit, and accountability tracking log | ✅ Done |
 

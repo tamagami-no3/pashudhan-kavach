@@ -18,17 +18,93 @@ import {
   Layers,
   Sparkles,
   Phone,
+  Clock,
+  Mic,
+  Activity,
+  CheckCircle2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { useAuth } from '@/context/AuthContext';
+
+function playDtmfTone(key: string) {
+  if (typeof window === 'undefined') return;
+  const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+  if (!AudioCtx) return;
+  try {
+    const ctx = new AudioCtx();
+    const toneMap: Record<string, [number, number]> = {
+      '1': [697, 1209],
+      '2': [697, 1336],
+      '3': [697, 1477],
+      '4': [770, 1209],
+      '5': [770, 1336],
+      '6': [770, 1477],
+      '7': [852, 1209],
+      '8': [852, 1336],
+      '9': [852, 1477],
+      '*': [941, 1209],
+      '0': [941, 1336],
+      '#': [941, 1477],
+    };
+    const freqs = toneMap[key] || [700, 1200];
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc1.frequency.value = freqs[0];
+    osc2.frequency.value = freqs[1];
+    gain.gain.value = 0.08;
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+    osc1.start();
+    osc2.start();
+    setTimeout(() => {
+      osc1.stop();
+      osc2.stop();
+      ctx.close();
+    }, 120);
+  } catch {
+    // Ignore audio error
+  }
+}
 
 export default function ChannelsPage() {
-  const [language, setLanguage] = useState<'mr' | 'hi' | 'en'>('mr');
+  const { language: authLang, setLanguage: setAuthLang } = useAuth();
+  const [language, setLanguageState] = useState<'mr' | 'hi' | 'en'>(
+    (authLang as 'mr' | 'hi' | 'en') || 'mr'
+  );
+
+  const setLanguage = (lang: 'mr' | 'hi' | 'en') => {
+    setLanguageState(lang);
+    if (setAuthLang) setAuthLang(lang);
+  };
+
+  useEffect(() => {
+    if (authLang && (authLang === 'mr' || authLang === 'hi' || authLang === 'en')) {
+      setLanguageState(authLang);
+    }
+  }, [authLang]);
+
   const [isCallActive, setIsCallActive] = useState(false);
   const [ivrStep, setIvrStep] = useState<'menu' | 'fmd' | 'lsd' | 'emergency'>('menu');
   const [currentSpeechText, setCurrentSpeechText] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [callDuration, setCallDuration] = useState(0);
+
+  // Timer for call duration
+  useEffect(() => {
+    let timer: any;
+    if (isCallActive) {
+      timer = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setCallDuration(0);
+    }
+    return () => clearInterval(timer);
+  }, [isCallActive]);
 
   // Stop speech synthesis on component unmount
   useEffect(() => {
@@ -42,7 +118,7 @@ export default function ChannelsPage() {
   // Web Speech synthesis helper
   const speakText = (text: string) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      alert('Speech synthesis is not supported in this browser.');
+      setCurrentSpeechText(text);
       return;
     }
 
@@ -51,7 +127,6 @@ export default function ChannelsPage() {
     setIsSpeaking(true);
 
     const utterance = new SpeechSynthesisUtterance(text);
-    // Attempt language voice matching
     if (language === 'mr') {
       utterance.lang = 'mr-IN';
     } else if (language === 'hi') {
@@ -112,7 +187,11 @@ export default function ChannelsPage() {
   };
 
   const handleKeypadPress = (digit: string) => {
-    if (!isCallActive) return;
+    playDtmfTone(digit);
+    if (!isCallActive) {
+      startIvrCall();
+      return;
+    }
 
     if (digit === '1') {
       setIvrStep('fmd');
@@ -139,91 +218,109 @@ export default function ChannelsPage() {
     setIvrStep('menu');
   };
 
+  const formatSeconds = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   const translations = {
     mr: {
       title: 'सर्वसमावेशक वितरण चॅनेल्स (Omni-Channel Access)',
       subtitle: 'वेब, मोबाइल, ऑफलाइन आणि आयव्हीआर व्हॉईस द्वारे महाराष्ट्रातील प्रत्येक पशुपालकापर्यंत पोहोच',
-      langToggleLabel: 'आयव्हीआर भाषा निवडा:',
+      callSimulatorTitle: 'स्मार्टफोन आयव्हीआर कॉल सिम्युलेटर (1962 Interactive Call Demo)',
+      callSimulatorSubtitle: 'साध्या फोनवरील व्हॉईस कॉल कसा चालतो याचा ब्राउझरमधील थेट अनुभव घ्या.',
       webTitle: '१. वेब पोर्टल (Web Portal)',
       webDesc: 'पूर्ण-वैशिष्ट्यीकृत डॅशबोर्ड, ३६ जिल्ह्यांचा रोग धोका हीटमॅप, डिजिटल हेल्थ पासपोर्ट पडताळणी व लॅब व्यवस्थापन.',
       webLink: 'डॅशबोर्ड उघडा',
       mobileTitle: '२. मोबाइल वेब व PWA (Mobile App)',
       mobileDesc: 'कोणत्याही स्वतंत्र ॲप इन्स्टॉलेशनची गरज नाही — सर्व स्मार्टफोनवर थेट चालणारे इन्स्टॉलेबल प्रोग्रेसिव्ह वेब ॲप (PWA).',
       offlineTitle: '३. ऑफलाइन मोड (Offline Sync)',
-      offlineDesc: 'ग्रामीण भागात इंटरनेट नसताना डेटा स्थानिकरीत्या साठवला जातो व इंटरनेट आल्यावर /api/sync/push आणि /api/sync/pull द्वारे LWW पद्धतीने आपोआप सिंक होतो.',
+      offlineDesc: 'ग्रामीण भागात इंटरनेट नसताना डेटा स्थानिकरीत्या IndexedDB मध्ये साठवला जातो व इंटरनेट आल्यावर LWW द्वारे सिंक होतो.',
       ivrTitle: '४. आयव्हीआर व्हॉईस हेल्पलाइन (IVR Helpline)',
-      ivrDesc: 'साध्या फीचर फोन वापरणाऱ्या शेतकऱ्यांसाठी व्हॉईस-आधारित संवाद प्रणाली. ब्राउझरमध्ये थेट व्हॉईस कॉल डेमो करून पहा.',
-      callNow: 'कॉल सुरू करा (Call Now Demo)',
-      hangUp: 'कॉल बंद करा (Hang Up)',
-      keypadTitle: 'फोन कीपॅड (Interactive Keypad):',
-      ivrDisclaimer:
-        'सूचना: आयव्हीआर प्रणाली येथे थेट ब्राउझर Web Speech API द्वारे डेमो स्वरूपात कार्यरत आहे. प्रत्यक्ष उत्पादनात Twilio/Exotel टेलिफोनी गेटवे द्वारे प्रत्यक्ष फोन कॉल्स हाताळले जातील.',
+      ivrDesc: 'साध्या फीचर फोन वापरणाऱ्या शेतकऱ्यांसाठी व्हॉईस-आधारित संवाद प्रणाली. ब्राउझरमध्ये थेट व्हॉईस कॉल टेस्ट करा.',
+      callNow: '१९६२ वर कॉल करा (Dial 1962 Demo)',
+      hangUp: 'कॉल संपवा (End Call)',
+      keypadTitle: 'फोन कीपॅड (DTMF Keypad)',
+      callActiveStatus: 'कॉल सुरू आहे • १९६२ हेल्पलाइन',
+      callIdleStatus: 'कॉल सुरू करण्यासाठी हिरवे बटण दाबा',
+      disclaimer: 'सूचना: हा ब्राउझर Web Speech & Web Audio API वर आधारित थेट सिम्युलेटर डेमो आहे. उत्पादनात Twilio/Exotel टेलिफोनी गेटवे द्वारे प्रत्यक्ष जीएसएम नेटवर्कवर कॉल चालतात.',
     },
     hi: {
       title: 'सर्वसमावेशक वितरण चैनल्स (Omni-Channel Access)',
       subtitle: 'वेब, मोबाइल, ऑफलाइन और आईवीआर वॉइस द्वारा प्रत्येक पशुपालक तक पहुंच',
-      langToggleLabel: 'आईवीआर भाषा चुनें:',
+      callSimulatorTitle: 'स्मार्टफोन आईवीआर कॉल सिम्युलेटर (1962 Interactive Call Demo)',
+      callSimulatorSubtitle: 'साधारण फोन पर वॉयस कॉल कैसे काम करती है, इसका लाइव अनुभव लें।',
       webTitle: '१. वेब पोर्टल (Web Portal)',
       webDesc: 'फुल-फीचर्ड डैशबोर्ड, 36 जिलों का रोग हीटमैप, डिजिटल हेल्थ पासपोर्ट सत्यापन और लैब प्रबंधन।',
       webLink: 'डैशबोर्ड खोलें',
       mobileTitle: '२. मोबाइल वेब व PWA (Mobile App)',
       mobileDesc: 'अलग ऐप इंस्टॉल करने की आवश्यकता नहीं — सभी स्मार्टफोन पर काम करने वाला प्रोग्रेसिव वेब ऐप (PWA)।',
       offlineTitle: '३. ऑफलाइन मोड (Offline Sync)',
-      offlineDesc: 'इंटरनेट न होने पर डेटा फोन में सुरक्षित रहता है और नेटवर्क मिलने पर /api/sync/push व /api/sync/pull द्वारा सिंक होता है।',
+      offlineDesc: 'इंटरनेट न होने पर डेटा फोन में सुरक्षित रहता है और नेटवर्क मिलने पर स्वतः सिंक होता है।',
       ivrTitle: '४. आईवीआर वॉइस हेल्पलाइन (IVR Helpline)',
-      ivrDesc: 'फीचर फोन उपयोगकर्ताओं के लिए वॉयस-आधारित इंटरएक्टिव प्रणाली। ब्राउज़र में वॉइस कॉल टेस्ट करें।',
-      callNow: 'कॉल शुरू करें (Call Now Demo)',
-      hangUp: 'कॉल समाप्त करें (Hang Up)',
-      keypadTitle: 'फोन कीपैड (Interactive Keypad):',
-      ivrDisclaimer:
-        'सूचना: आईवीआर प्रणाली यहाँ ब्राउज़र Web Speech API द्वारा लाइव डेमो के रूप में दिखाई गई है। वास्तविक उत्पादन में टेलीफोनी गेटवे का उपयोग होगा।',
+      ivrDesc: 'फीचर फोन उपयोगकर्ताओं के लिए वॉयस-आधारित इंटरएक्टिव प्रणाली।',
+      callNow: '1962 पर कॉल करें (Dial 1962 Demo)',
+      hangUp: 'कॉल समाप्त करें (End Call)',
+      keypadTitle: 'फोन कीपैड (DTMF Keypad)',
+      callActiveStatus: 'कॉल चालू है • 1962 हेल्पलाइन',
+      callIdleStatus: 'कॉल शुरू करने के लिए हरा बटन दबाएं',
+      disclaimer: 'सूचना: यह ब्राउज़र Web Speech & Web Audio API पर आधारित लाइव डेमो है। उत्पादन में वास्तविक टेलीफोनी गेटवे का उपयोग होता है।',
     },
     en: {
-      title: 'Omni-Channel Delivery Architecture',
-      subtitle: 'Reaching every farmer across Maharashtra via Web, Mobile PWA, Offline Store-and-Forward, and IVR Voice',
-      langToggleLabel: 'Select IVR Language:',
+      title: 'Omni-Channel Distribution & Helpline Architecture',
+      subtitle: 'Reaching every livestock farmer across Maharashtra via Web, Mobile, 100% Offline Queuing, and IVR',
+      callSimulatorTitle: 'Interactive Smartphone IVR Call Simulator (1962 Demo)',
+      callSimulatorSubtitle: 'Experience the real automated telephone helpline directly in your browser with dial tones & voice responses.',
       webTitle: '1. Web Portal',
-      webDesc: 'Enterprise veterinary command center with 36-district GIS risk heatmap, digital health passports, and lab case workflow.',
-      webLink: 'Open Live Dashboard',
-      mobileTitle: '2. Mobile App (PWA)',
-      mobileDesc: 'Fully responsive mobile-first UI functioning as an installable Progressive Web App (PWA) across all mobile devices.',
-      offlineTitle: '3. Offline Sync Mode',
-      offlineDesc: 'Edge-cached field reporting utilizing sync_queue_items with /api/sync/push and /api/sync/pull (Last-Write-Wins with conflict detection).',
-      ivrTitle: '4. IVR Voice Helpline',
-      ivrDesc: 'Dial-in voice menu designed for non-smartphone / feature phone farmers with automated disease triage and emergency advisory.',
-      callNow: 'Call Now (Voice Demo)',
+      webDesc: 'Enterprise operations center with 36-district epidemic heatmap, digital animal health passports, and lab workflow.',
+      webLink: 'Open Dashboard',
+      mobileTitle: '2. Mobile Web & PWA',
+      mobileDesc: 'No bulky app store download required. Fully responsive, installable progressive web app functioning smoothly on mobile.',
+      offlineTitle: '3. 100% Offline Sync',
+      offlineDesc: 'Stores records in IndexedDB during rural connectivity drops, auto-reconciling via Last-Write-Wins (LWW).',
+      ivrTitle: '4. IVR Voice Helpline (1962)',
+      ivrDesc: 'Interactive Voice Response for non-smartphone farmers with DTMF tone support and regional speech audio.',
+      callNow: 'Dial 1962 Helpline Demo',
       hangUp: 'Hang Up Call',
-      keypadTitle: 'Dialer Keypad (Interactive):',
-      ivrDisclaimer:
-        'Note: IVR shown here as a live browser voice demo via Web Speech API. A production deployment integrates telephony providers (e.g. Twilio/Exotel) for real phone-in access.',
+      keypadTitle: 'Interactive DTMF Keypad',
+      callActiveStatus: 'Call Connected • 1962 Govt Animal Helpline',
+      callIdleStatus: 'Press Dial 1962 to simulate an incoming voice call',
+      disclaimer: 'Demo Note: This simulator runs via browser Web Speech & Web Audio synthesis. In production, this interfaces directly with telecom PRI/SIP trunks via Twilio/Exotel.',
     },
   }[language];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-foreground pb-20">
       <Navbar />
 
-      <main className="container max-w-6xl mx-auto px-4 py-8 flex-1">
+      <main className="container max-w-5xl mx-auto px-4 py-8 space-y-8">
         {/* Header with Title & Language Switcher */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b">
           <div>
             <div className="flex items-center gap-2">
-              <Layers className="h-6 w-6 text-emerald-600" />
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{translations.title}</h1>
+              <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300 font-bold text-xs uppercase">
+                Architecture Spec
+              </Badge>
+              <span className="text-xs text-muted-foreground font-mono">Channel Resilience</span>
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{translations.subtitle}</p>
+            <h1 className="text-2xl font-black mt-1 text-slate-900 dark:text-white">
+              {translations.title}
+            </h1>
+            <p className="text-xs text-muted-foreground mt-0.5 max-w-2xl">
+              {translations.subtitle}
+            </p>
           </div>
 
-          {/* Standalone Language Switcher */}
-          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border rounded-xl p-1.5 shadow-sm text-xs font-semibold self-end md:self-auto">
-            <span className="text-slate-500 hidden sm:inline px-1">{translations.langToggleLabel}</span>
+          {/* Standalone Language Toggle */}
+          <div className="flex items-center gap-1 bg-white dark:bg-zinc-900 border rounded-xl p-1 shadow-sm text-xs font-semibold self-end sm:self-auto">
             <button
               onClick={() => {
                 setLanguage('mr');
                 if (isCallActive) hangUpIvrCall();
               }}
               className={`px-3 py-1.5 rounded-lg transition-all ${
-                language === 'mr' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
+                language === 'mr' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-zinc-800'
               }`}
             >
               मराठी
@@ -234,7 +331,7 @@ export default function ChannelsPage() {
                 if (isCallActive) hangUpIvrCall();
               }}
               className={`px-3 py-1.5 rounded-lg transition-all ${
-                language === 'hi' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
+                language === 'hi' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-zinc-800'
               }`}
             >
               हिंदी
@@ -245,7 +342,7 @@ export default function ChannelsPage() {
                 if (isCallActive) hangUpIvrCall();
               }}
               className={`px-3 py-1.5 rounded-lg transition-all ${
-                language === 'en' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
+                language === 'en' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-zinc-800'
               }`}
             >
               English
@@ -253,220 +350,321 @@ export default function ChannelsPage() {
           </div>
         </div>
 
-        {/* 4 Channel Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-          {/* Card 1: Web Portal (LIVE) */}
-          <Card className="flex flex-col justify-between border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                  <Globe className="h-5 w-5" />
-                </div>
-                {/* LIVE badge: Green */}
-                <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">
-                  LIVE
-                </Badge>
-              </div>
-              <CardTitle className="text-base font-bold">{translations.webTitle}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              {translations.webDesc}
-            </CardContent>
-            <CardFooter className="pt-2 border-t border-slate-100 dark:border-slate-800">
-              <Link href="/dashboard" className="w-full">
-                <Button variant="outline" size="sm" className="w-full flex items-center justify-center gap-1.5 text-xs text-emerald-700 hover:bg-emerald-50">
-                  <span>{translations.webLink}</span>
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
+        {/* HERO SECTION: Interactive Smartphone Call Simulator */}
+        <div className="bg-gradient-to-br from-slate-900 via-zinc-900 to-slate-950 text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800 relative overflow-hidden">
+          {/* Subtle background glow */}
+          <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-red-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          {/* Card 2: Mobile App / PWA (LIVE) */}
-          <Card className="flex flex-col justify-between border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                  <Smartphone className="h-5 w-5" />
-                </div>
-                {/* LIVE badge: Green */}
-                <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">
-                  LIVE
-                </Badge>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+            {/* Left Column: Context & Overview */}
+            <div className="lg:col-span-6 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
+                <PhoneCall className="h-3.5 w-3.5" />
+                <span>Govt 1962 Telephony Integration</span>
               </div>
-              <CardTitle className="text-base font-bold">{translations.mobileTitle}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              {translations.mobileDesc}
-            </CardContent>
-            <CardFooter className="pt-2 border-t border-slate-100 dark:border-slate-800">
-              <div className="w-full py-1 text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 rounded-md">
-                ✓ PWA Ready • 100% Responsive
-              </div>
-            </CardFooter>
-          </Card>
 
-          {/* Card 3: Offline Mode (STUB) */}
-          <Card className="flex flex-col justify-between border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="p-2.5 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                  <WifiOff className="h-5 w-5" />
-                </div>
-                {/* STUB badge: Amber */}
-                <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300 font-bold text-xs">
-                  STUB
-                </Badge>
-              </div>
-              <CardTitle className="text-base font-bold">{translations.offlineTitle}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed space-y-2">
-              <p>{translations.offlineDesc}</p>
-              <div className="p-2 bg-slate-100 dark:bg-slate-900 rounded font-mono text-[10px] text-slate-600 dark:text-slate-300">
-                POST /api/sync/push<br />
-                GET /api/sync/pull?since=...
-              </div>
-            </CardContent>
-            <CardFooter className="pt-2 border-t border-slate-100 dark:border-slate-800">
-              <div className="w-full py-1 text-center text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 rounded-md">
-                LWW Conflict Resolution
-              </div>
-            </CardFooter>
-          </Card>
+              <h2 className="text-xl sm:text-2xl font-black leading-tight text-white">
+                {translations.callSimulatorTitle}
+              </h2>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                {translations.callSimulatorSubtitle}
+              </p>
 
-          {/* Card 4: IVR Voice Helpline (MOCK browser demo) */}
-          <Card className="flex flex-col justify-between border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow ring-2 ring-emerald-500/20">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="p-2.5 rounded-xl bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-                  <PhoneCall className="h-5 w-5" />
+              <div className="space-y-2 pt-2 text-xs text-slate-300">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong>Zero Internet Required:</strong> Works on basic Rs. 800 feature phones via 1962 toll-free voice calls.</span>
                 </div>
-                {/* MOCK badge: Gray/Slate */}
-                <Badge variant="secondary" className="bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200 font-bold text-xs">
-                  MOCK (browser demo)
-                </Badge>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong>Interactive Keypad:</strong> Press 1 for FMD, 2 for LSD, 3 for Emergency Dispatch, 4 to repeat menu.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong>Live Audio Synthesis:</strong> Native speech output with authentic DTMF dialer sound effects.</span>
+                </div>
               </div>
-              <CardTitle className="text-base font-bold">{translations.ivrTitle}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed space-y-3">
-              <p>{translations.ivrDesc}</p>
 
-              {/* Call Controls */}
-              {!isCallActive ? (
-                <Button
-                  onClick={startIvrCall}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 py-2.5 rounded-xl shadow-sm"
-                >
-                  <Phone className="h-4 w-4" />
-                  <span>{translations.callNow}</span>
-                </Button>
-              ) : (
-                <div className="space-y-3 bg-emerald-50/50 dark:bg-slate-900/80 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800">
-                  {/* Call Status Header */}
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-1.5 font-bold text-emerald-800 dark:text-emerald-400">
-                      <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                      </span>
-                      <span>Call Connected (1962)</span>
-                    </div>
-                    {isSpeaking ? (
-                      <Volume2 className="h-4 w-4 text-emerald-600 animate-bounce" />
+              <div className="pt-4 flex flex-wrap items-center gap-3">
+                <Link href="/report">
+                  <Button variant="outline" size="sm" className="bg-white/10 hover:bg-white/20 text-white border-white/20 text-xs">
+                    <ShieldAlert className="h-3.5 w-3.5 mr-1 text-red-400" />
+                    वेब तक्रार पोर्टल (1962 Web Report)
+                  </Button>
+                </Link>
+                <Link href="/chatbot">
+                  <Button variant="ghost" size="sm" className="text-emerald-400 hover:text-emerald-300 text-xs">
+                    <Smartphone className="h-3.5 w-3.5 mr-1" />
+                    एआय कॅमेरा स्कॅनर (Vision AI)
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column: The Smartphone Device Mock */}
+            <div className="lg:col-span-6 flex justify-center">
+              <div className="w-full max-w-sm bg-slate-950 border-4 border-slate-700 rounded-[2.5rem] p-5 shadow-2xl space-y-4 text-center relative ring-1 ring-white/10">
+                {/* Speaker Grill & Camera Punch */}
+                <div className="flex items-center justify-center gap-2 pb-1">
+                  <div className="h-1.5 w-12 bg-slate-800 rounded-full" />
+                  <div className="h-2 w-2 bg-slate-800 rounded-full" />
+                </div>
+
+                {/* Call Header Status */}
+                <div className="space-y-1">
+                  <div className="text-[11px] font-semibold text-slate-400 flex items-center justify-center gap-1.5">
+                    {isCallActive ? (
+                      <>
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span className="text-emerald-400 font-bold">{translations.callActiveStatus}</span>
+                      </>
                     ) : (
-                      <VolumeX className="h-4 w-4 text-slate-400" />
+                      <span>{translations.callIdleStatus}</span>
                     )}
                   </div>
+                  <h3 className="text-lg font-black tracking-wide text-white">
+                    १९६२ (1962 Helpline)
+                  </h3>
+                  <div className="text-xs font-mono text-slate-400">
+                    {isCallActive ? formatSeconds(callDuration) : 'Toll-Free • 24x7'}
+                  </div>
+                </div>
 
-                  {/* Speech Subtitles */}
-                  {currentSpeechText && (
-                    <div className="p-2 bg-white dark:bg-slate-950 rounded border text-[11px] text-slate-700 dark:text-slate-300 italic max-h-20 overflow-y-auto">
-                      &ldquo;{currentSpeechText}&rdquo;
+                {/* Soundwave Visualizer / Avatar */}
+                <div className="h-20 bg-slate-900/80 rounded-2xl border border-slate-800 flex flex-col items-center justify-center p-3 relative overflow-hidden">
+                  {isCallActive ? (
+                    <div className="space-y-1.5 w-full">
+                      <div className="flex items-center justify-center gap-1 h-8">
+                        {[40, 70, 30, 90, 60, 100, 45, 80, 55, 95, 35, 65].map((h, i) => (
+                          <div
+                            key={i}
+                            className={`w-1 rounded-full transition-all duration-200 ${
+                              isSpeaking
+                                ? 'bg-emerald-400 animate-pulse'
+                                : 'bg-slate-700'
+                            }`}
+                            style={{ height: isSpeaking ? `${h}%` : '20%' }}
+                          />
+                        ))}
+                      </div>
+                      <div className="text-[10px] text-emerald-300 font-mono font-semibold flex items-center justify-center gap-1">
+                        <Volume2 className="h-3 w-3 animate-bounce" />
+                        <span>{isSpeaking ? 'ध्वनी सुरू आहे (Speaking...)' : 'कीपॅड दाबण्याची प्रतीक्षा (Listening...)'}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center text-slate-500 text-xs">
+                      <Phone className="h-6 w-6 mb-1 text-slate-600" />
+                      <span>कॉल सुरू नाही</span>
                     </div>
                   )}
-
-                  {/* On-screen Keypad Buttons 1, 2, 3, 4 */}
-                  <div>
-                    <p className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                      {translations.keypadTitle}
-                    </p>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      <button
-                        onClick={() => handleKeypadPress('1')}
-                        className={`py-2 px-1 rounded-lg border font-bold text-sm transition-all ${
-                          ivrStep === 'fmd'
-                            ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm'
-                            : 'bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 hover:bg-slate-100'
-                        }`}
-                        title="1: FMD Symptoms"
-                      >
-                        1
-                        <span className="block text-[8px] font-normal text-slate-400">FMD</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleKeypadPress('2')}
-                        className={`py-2 px-1 rounded-lg border font-bold text-sm transition-all ${
-                          ivrStep === 'lsd'
-                            ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm'
-                            : 'bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 hover:bg-slate-100'
-                        }`}
-                        title="2: LSD Symptoms"
-                      >
-                        2
-                        <span className="block text-[8px] font-normal text-slate-400">LSD</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleKeypadPress('3')}
-                        className={`py-2 px-1 rounded-lg border font-bold text-sm transition-all ${
-                          ivrStep === 'emergency'
-                            ? 'bg-red-600 text-white border-red-700 shadow-sm'
-                            : 'bg-white dark:bg-slate-950 text-red-600 hover:bg-red-50'
-                        }`}
-                        title="3: Emergency"
-                      >
-                        3
-                        <span className="block text-[8px] font-normal text-red-400">SOS</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleKeypadPress('4')}
-                        className={`py-2 px-1 rounded-lg border font-bold text-sm transition-all ${
-                          ivrStep === 'menu'
-                            ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm'
-                            : 'bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 hover:bg-slate-100'
-                        }`}
-                        title="4: Repeat Menu"
-                      >
-                        4
-                        <span className="block text-[8px] font-normal text-slate-400">Repeat</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Hang Up Button */}
-                  <Button
-                    onClick={hangUpIvrCall}
-                    variant="destructive"
-                    size="sm"
-                    className="w-full flex items-center justify-center gap-1.5 text-xs rounded-lg"
-                  >
-                    <PhoneOff className="h-3.5 w-3.5" />
-                    <span>{translations.hangUp}</span>
-                  </Button>
                 </div>
-              )}
-            </CardContent>
-            <CardFooter className="pt-2 border-t border-slate-100 dark:border-slate-800">
-              <p className="text-[10px] text-slate-500 leading-tight italic">
-                {translations.ivrDisclaimer}
-              </p>
-            </CardFooter>
-          </Card>
+
+                {/* Live Speech Subtitles Box */}
+                {isCallActive && currentSpeechText && (
+                  <div className="p-2.5 bg-slate-900 border border-emerald-900/40 rounded-xl text-left text-[11px] text-emerald-200 italic max-h-24 overflow-y-auto leading-relaxed shadow-inner">
+                    &ldquo;{currentSpeechText}&rdquo;
+                  </div>
+                )}
+
+                {/* 3x4 DTMF Numeric Keypad */}
+                <div className="space-y-1 pt-1">
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 text-left px-1">
+                    {translations.keypadTitle}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { num: '1', sub: 'FMD', desc: 'लाळ्या खुरकूत' },
+                      { num: '2', sub: 'LSD', desc: 'लंपी' },
+                      { num: '3', sub: 'SOS', desc: 'आणीबाणी' },
+                      { num: '4', sub: 'REPEAT', desc: 'पुन्हा ऐका' },
+                      { num: '5', sub: 'JKL', desc: '' },
+                      { num: '6', sub: 'MNO', desc: '' },
+                      { num: '7', sub: 'PQRS', desc: '' },
+                      { num: '8', sub: 'TUV', desc: '' },
+                      { num: '9', sub: 'WXYZ', desc: '' },
+                      { num: '*', sub: '', desc: '' },
+                      { num: '0', sub: '+', desc: '' },
+                      { num: '#', sub: '', desc: '' },
+                    ].map((keyItem) => {
+                      const isHighlighted =
+                        (keyItem.num === '1' && ivrStep === 'fmd') ||
+                        (keyItem.num === '2' && ivrStep === 'lsd') ||
+                        (keyItem.num === '3' && ivrStep === 'emergency') ||
+                        (keyItem.num === '4' && ivrStep === 'menu');
+
+                      return (
+                        <button
+                          key={keyItem.num}
+                          type="button"
+                          onClick={() => handleKeypadPress(keyItem.num)}
+                          className={`h-12 rounded-xl flex flex-col items-center justify-center transition-all border font-bold ${
+                            isHighlighted
+                              ? 'bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-900/50 scale-105 ring-2 ring-emerald-300'
+                              : 'bg-slate-900/90 border-slate-800 text-white hover:bg-slate-800 active:scale-95'
+                          }`}
+                        >
+                          <span className="text-base leading-none">{keyItem.num}</span>
+                          {keyItem.sub && (
+                            <span className="text-[8px] font-mono text-slate-400 leading-none mt-0.5">
+                              {keyItem.sub}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Call Controls: Dial vs Hangup */}
+                <div className="pt-2">
+                  {!isCallActive ? (
+                    <Button
+                      onClick={startIvrCall}
+                      className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <Phone className="h-4 w-4" />
+                      <span>{translations.callNow}</span>
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={hangUpIvrCall}
+                      variant="destructive"
+                      className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-black text-sm rounded-2xl shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <PhoneOff className="h-4 w-4" />
+                      <span>{translations.hangUp}</span>
+                    </Button>
+                  )}
+                </div>
+
+                <p className="text-[10px] text-slate-400 italic text-center pt-1">
+                  {translations.disclaimer}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 4 Architectural Delivery Channels Comparison Grid */}
+        <div>
+          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+            <Layers className="h-4 w-4 text-emerald-600" />
+            <span>४ प्रमुख वितरण माध्यम (4 Omni-Channel Modalities)</span>
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 1. Web Portal */}
+            <Card className="flex flex-col justify-between border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                    <Globe className="h-5 w-5" />
+                  </div>
+                  <Badge className="bg-emerald-600 text-white font-bold text-[10px]">
+                    LIVE
+                  </Badge>
+                </div>
+                <CardTitle className="text-sm font-bold">{translations.webTitle}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground leading-relaxed">
+                {translations.webDesc}
+              </CardContent>
+              <CardFooter className="pt-2 border-t">
+                <Link href="/dashboard" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full flex items-center justify-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50">
+                    <span>{translations.webLink}</span>
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+
+            {/* 2. Mobile App / PWA */}
+            <Card className="flex flex-col justify-between border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                    <Smartphone className="h-5 w-5" />
+                  </div>
+                  <Badge className="bg-emerald-600 text-white font-bold text-[10px]">
+                    LIVE
+                  </Badge>
+                </div>
+                <CardTitle className="text-sm font-bold">{translations.mobileTitle}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground leading-relaxed">
+                {translations.mobileDesc}
+              </CardContent>
+              <CardFooter className="pt-2 border-t">
+                <div className="w-full py-1 text-center text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 rounded-lg">
+                  ✓ PWA Ready • 100% Responsive
+                </div>
+              </CardFooter>
+            </Card>
+
+            {/* 3. Offline Mode */}
+            <Card className="flex flex-col justify-between border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">
+                    <WifiOff className="h-5 w-5" />
+                  </div>
+                  <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300 font-bold text-[10px]">
+                    OFFLINE DB
+                  </Badge>
+                </div>
+                <CardTitle className="text-sm font-bold">{translations.offlineTitle}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground leading-relaxed space-y-2">
+                <p>{translations.offlineDesc}</p>
+                <div className="p-2 bg-slate-100 dark:bg-zinc-900 rounded-lg font-mono text-[10px] text-slate-700 dark:text-slate-300">
+                  POST /api/sync/push<br />
+                  GET /api/sync/pull?since=...
+                </div>
+              </CardContent>
+              <CardFooter className="pt-2 border-t">
+                <div className="w-full py-1 text-center text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 rounded-lg">
+                  IndexedDB + LWW Sync
+                </div>
+              </CardFooter>
+            </Card>
+
+            {/* 4. IVR Voice Helpline */}
+            <Card className="flex flex-col justify-between border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition ring-2 ring-emerald-500/20">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                    <PhoneCall className="h-5 w-5" />
+                  </div>
+                  <Badge variant="secondary" className="bg-slate-200 text-slate-800 dark:bg-zinc-800 dark:text-slate-200 font-bold text-[10px]">
+                    SIMULATOR
+                  </Badge>
+                </div>
+                <CardTitle className="text-sm font-bold">{translations.ivrTitle}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground leading-relaxed">
+                {translations.ivrDesc}
+              </CardContent>
+              <CardFooter className="pt-2 border-t">
+                <Button
+                  onClick={startIvrCall}
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs font-bold text-emerald-700 dark:text-emerald-400 border-emerald-300 hover:bg-emerald-50"
+                >
+                  <Phone className="h-3.5 w-3.5 mr-1" />
+                  कॉल टेस्ट करा (Test Call)
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
         </div>
       </main>
     </div>
   );
 }
-

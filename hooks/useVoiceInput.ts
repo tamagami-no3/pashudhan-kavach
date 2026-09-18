@@ -62,7 +62,8 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
 
       try {
         const recognition = new SpeechRecognition();
-        recognition.continuous = false;
+        // Use continuous mode so recognition does not cut off after a 0.5s pause
+        recognition.continuous = true;
         recognition.interimResults = true;
         recognition.maxAlternatives = 1;
 
@@ -74,35 +75,40 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
         };
 
         recognition.onresult = (event: any) => {
-          let currentText = '';
-          let isFinal = false;
+          let fullTranscript = '';
+          let hasFinalChunk = false;
 
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            const result = event.results[i];
-            currentText += result[0].transcript;
-            if (result.isFinal) {
-              isFinal = true;
+          for (let i = 0; i < event.results.length; i++) {
+            const res = event.results[i];
+            if (res && res[0]) {
+              fullTranscript += res[0].transcript + ' ';
+              if (res.isFinal) {
+                hasFinalChunk = true;
+              }
             }
           }
 
-          setTranscript(currentText);
-          if (onTranscriptChange) {
-            onTranscriptChange(currentText);
+          const trimmed = fullTranscript.trim();
+          setTranscript(trimmed);
+
+          if (onTranscriptChange && trimmed) {
+            onTranscriptChange(trimmed);
           }
 
-          if (isFinal && onFinalTranscript) {
-            onFinalTranscript(currentText);
+          if (hasFinalChunk && onFinalTranscript && trimmed) {
+            onFinalTranscript(trimmed);
           }
         };
 
         recognition.onerror = (event: any) => {
           console.warn('Speech recognition error event:', event.error);
-          setIsListening(false);
           if (event.error === 'not-allowed') {
+            setIsListening(false);
             toast.error('Microphone access was denied. Please allow microphone permissions.');
           } else if (event.error === 'no-speech') {
-            // benign, no speech detected
+            // benign in continuous mode, do not drop session
           } else if (event.error !== 'aborted') {
+            setIsListening(false);
             toast.error(`Speech recognition error: ${event.error}`);
           }
         };

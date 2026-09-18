@@ -6,6 +6,7 @@ import {
   CLINICAL_SYMPTOMS_CATALOG,
   SymptomDescriptor,
   matchSymptomsFromText,
+  detectNegatedSymptoms,
 } from '@/lib/constants/symptoms';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { queueOfflineReport } from '@/lib/offlineStore';
@@ -32,6 +33,8 @@ import {
   MapPin,
   Tag,
   WifiOff,
+  RefreshCw,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -72,6 +75,105 @@ export function FrictionlessReportForm({
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Live Camera states
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [cameraActive, setCameraActive] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const cameraStreamRef = useRef<MediaStream | null>(null);
+
+  // Stop camera tracks cleanly
+  const stopCameraTracks = () => {
+    if (cameraStreamRef.current) {
+      cameraStreamRef.current.getTracks().forEach((track) => track.stop());
+      cameraStreamRef.current = null;
+    }
+  };
+
+  const stopLiveCamera = () => {
+    stopCameraTracks();
+    setIsCameraOpen(false);
+    setCameraActive(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      stopCameraTracks();
+    };
+  }, []);
+
+  const startLiveCamera = async (mode = facingMode) => {
+    setCameraError(null);
+    stopCameraTracks();
+    setIsCameraOpen(true);
+
+    try {
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: mode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        });
+      } catch {
+        // Fallback for laptop webcams without environment lens
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+      }
+
+      cameraStreamRef.current = stream;
+      setCameraActive(true);
+    } catch (err: any) {
+      console.warn('Camera access error:', err);
+      setCameraError(
+        language === 'mr'
+          ? 'कॅमेरा सुरू करता आला नाही. कृपया ब्राऊझर परवानगी तपासा किंवा फाइल अपलोड वापरा.'
+          : 'Camera access unavailable or denied. Please check permissions or use file upload.'
+      );
+    }
+  };
+
+  const toggleCameraFacing = () => {
+    const nextMode = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextMode);
+    startLiveCamera(nextMode);
+  };
+
+  // Attach stream to video element when mounted
+  useEffect(() => {
+    if (isCameraOpen && cameraStreamRef.current && videoRef.current) {
+      videoRef.current.srcObject = cameraStreamRef.current;
+      videoRef.current.play().catch((e) => console.warn('Video play error:', e));
+    }
+  }, [isCameraOpen, cameraActive]);
+
+  const captureLiveSnapshot = () => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current || document.createElement('canvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const base64 = canvas.toDataURL('image/jpeg', 0.85);
+    setImageBase64(base64);
+    setImagePreview(base64);
+    stopLiveCamera();
+    toast.success(
+      language === 'mr' ? 'फोटो यशस्वीरीत्या जोडला गेला!' : 'Photo captured successfully!'
+    );
+  };
+
   // Acquire geolocation on mount
   useEffect(() => {
     if (typeof navigator !== 'undefined' && 'geolocation' in navigator) {
@@ -85,28 +187,45 @@ export function FrictionlessReportForm({
     }
   }, []);
 
-  // Voice recognition hook
+  // Voice recognition hook with negation awareness
   const { isListening, toggleListening, stopListening } = useVoiceInput({
     language,
     onTranscriptChange: (spoken) => {
       setVoiceNotes(spoken);
       // Real-time intent matching from voice transcript
       const matched = matchSymptomsFromText(spoken);
-      if (matched.length > 0) {
-        setSelectedSymptomIds((prev) => {
-          const combined = new Set([...prev, ...matched.map((m) => m.id)]);
-          return Array.from(combined);
-        });
-      }
+      const negated = detectNegatedSymptoms(spoken);
+
+      setSelectedSymptomIds((prev) => {
+        let updated = [...prev];
+        if (matched.length > 0) {
+          updated = Array.from(new Set([...updated, ...matched.map((m) => m.id)]));
+        }
+        if (negated.length > 0) {
+          const negIds = new Set(negated.map((n) => n.id));
+          updated = updated.filter((id) => !negIds.has(id));
+        }
+        return updated;
+      });
     },
     onFinalTranscript: (finalSpoken) => {
       setVoiceNotes(finalSpoken);
       const matched = matchSymptomsFromText(finalSpoken);
+      const negated = detectNegatedSymptoms(finalSpoken);
+
+      setSelectedSymptomIds((prev) => {
+        let updated = [...prev];
+        if (matched.length > 0) {
+          updated = Array.from(new Set([...updated, ...matched.map((m) => m.id)]));
+        }
+        if (negated.length > 0) {
+          const negIds = new Set(negated.map((n) => n.id));
+          updated = updated.filter((id) => !negIds.has(id));
+        }
+        return updated;
+      });
+
       if (matched.length > 0) {
-        setSelectedSymptomIds((prev) => {
-          const combined = new Set([...prev, ...matched.map((m) => m.id)]);
-          return Array.from(combined);
-        });
         toast.success(
           language === 'mr'
             ? `${matched.length} लक्षणे आवाजावरून निवडली!`
@@ -440,6 +559,73 @@ export function FrictionlessReportForm({
           />
         </div>
 
+        {/* Live Camera Viewfinder Modal */}
+        {isCameraOpen && (
+          <div className="p-3 bg-slate-900 text-white rounded-2xl space-y-3 border border-slate-700 shadow-md">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold flex items-center gap-2 text-emerald-400">
+                <Camera className="h-4 w-4" />
+                <span>थेट कॅमेरा दृश्य (Live Viewfinder)</span>
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleCameraFacing}
+                  className="text-xs h-7 px-2 bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
+                >
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  कॅमेरा बदला
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={stopLiveCamera}
+                  className="text-xs h-7 px-2 text-slate-400 hover:text-white hover:bg-slate-800"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {cameraError ? (
+              <div className="p-3 bg-red-950/60 border border-red-800 text-red-300 text-xs rounded-xl">
+                {cameraError}
+              </div>
+            ) : (
+              <div className="relative rounded-xl overflow-hidden bg-black aspect-video max-h-72 w-full flex items-center justify-center">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-4 border-2 border-dashed border-white/40 rounded-xl pointer-events-none" />
+              </div>
+            )}
+
+            <canvas ref={canvasRef} className="hidden" />
+
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-[11px] text-slate-400">
+                जनावराची जखम किंवा लक्षण चौकोनात ठेवा
+              </span>
+              <Button
+                type="button"
+                onClick={captureLiveSnapshot}
+                disabled={Boolean(cameraError)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 h-8 gap-1.5 rounded-xl shadow"
+              >
+                <Camera className="h-3.5 w-3.5" />
+                फोटो काढा (Capture)
+              </Button>
+            </div>
+          </div>
+        )}
+
         {imagePreview ? (
           <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border">
             <img
@@ -463,21 +649,36 @@ export function FrictionlessReportForm({
               <X className="h-4 w-4" />
             </Button>
           </div>
-        ) : (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full h-11 text-xs border-dashed border-2 flex items-center justify-center gap-2 text-slate-600 hover:border-emerald-500 hover:text-emerald-700"
-          >
-            <Camera className="h-4 w-4" />
-            <span>
-              {language === 'mr'
-                ? 'कॅमेरा सुरू करा / गॅलरीतून फोटो निवडा'
-                : 'Open Camera / Choose Photo'}
-            </span>
-          </Button>
-        )}
+        ) : !isCameraOpen ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => startLiveCamera()}
+              className="h-11 text-xs border-dashed border-2 flex items-center justify-center gap-2 text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
+            >
+              <Camera className="h-4 w-4 text-emerald-600" />
+              <span>
+                {language === 'mr'
+                  ? 'थेट कॅमेरा सुरू करा (Open Camera)'
+                  : 'Open Live Camera'}
+              </span>
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-11 text-xs border-dashed border-2 flex items-center justify-center gap-2 text-slate-600 hover:border-slate-400"
+            >
+              <ImageIcon className="h-4 w-4 text-slate-500" />
+              <span>
+                {language === 'mr'
+                  ? 'गॅलरीतून फोटो निवडा (Choose File)'
+                  : 'Choose File from Gallery'}
+              </span>
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       {/* 5. Submit Action Button */}

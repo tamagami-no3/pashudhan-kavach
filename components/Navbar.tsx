@@ -74,95 +74,90 @@ export function Navbar() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
-            {isChatbotActive ? (
-              // Clean Farmer-Facing Navigation: Dashboard nav items never leak through
-              <>
-                <Link
-                  href="/"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                >
-                  <Home className="h-4 w-4" />
-                  <span>Home</span>
-                </Link>
-                <Link
-                  href="/channels"
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                >
-                  <Layers className="h-4 w-4 text-emerald-600" />
-                  <span>{t('nav_channels') || 'Channels'}</span>
-                </Link>
-                {user && user.role !== 'farmer' && (
+            <Link
+              href="/"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
+                pathname === '/'
+                  ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              <Home className="h-4 w-4" />
+              <span>{t('nav_home')}</span>
+            </Link>
+
+            {/* 1. Emergency 1962 Report Button */}
+            <Link
+              href="/report"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                pathname === '/report'
+                  ? 'bg-red-600 text-white border-red-700 shadow-sm'
+                  : 'border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:bg-red-100'
+              }`}
+            >
+              <ShieldAlert className="h-4 w-4 text-red-600 dark:text-red-400" />
+              <span>{t('nav_report_1962') || 'तक्रार (1962 Report)'}</span>
+            </Link>
+
+            {/* 2. AI Vision Lesion Scanner */}
+            <Link
+              href="/chatbot"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
+                pathname === '/chatbot'
+                  ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              <Bot className="h-4 w-4 text-emerald-600" />
+              <span>{t('nav_vision_scanner') || 'एआय कॅमेरा स्कॅनर'}</span>
+            </Link>
+
+            {/* 3. GIS Outbreak Heatmap */}
+            <Link
+              href="/heatmap"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
+                pathname === '/heatmap'
+                  ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              <MapPin className="h-4 w-4 text-blue-600" />
+              <span>{t('nav_heatmap')}</span>
+            </Link>
+
+            {/* 4. IVR Helpline Demo */}
+            <Link
+              href="/channels"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
+                pathname === '/channels'
+                  ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              <Layers className="h-4 w-4 text-purple-600" />
+              <span>{t('nav_ivr_demo') || 'व्हॉईस कॉल (IVR)'}</span>
+            </Link>
+
+            {/* Authority Role Features (If logged in) */}
+            {user &&
+              navLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = pathname === link.href;
+                return (
                   <Link
-                    href="/dashboard"
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-slate-100 dark:bg-zinc-800 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-colors ml-2"
+                    key={link.href}
+                    href={link.href}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
+                      isActive
+                        ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
                   >
-                    <Activity className="h-3.5 w-3.5 text-emerald-600" />
-                    <span>Authority Dashboard</span>
+                    <Icon className="h-4 w-4" />
+                    {link.label}
                   </Link>
-                )}
-              </>
-            ) : (
-              // Standard Authority / Role Navigation
-              <>
-                {user &&
-                  navLinks.map((link) => {
-                    const Icon = link.icon;
-                    const isActive = pathname === link.href;
-                    return (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
-                          isActive
-                            ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                        {link.label}
-                      </Link>
-                    );
-                  })}
-
-                {/* Standalone Chatbot & Channels Nav Links placed next to each other */}
-                <Link
-                  href="/chatbot"
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
-                    isChatbotActive
-                      ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                >
-                  <Bot className="h-4 w-4 text-emerald-600" />
-                  {t('nav_chatbot') || 'Chatbot'}
-                </Link>
-
-                <Link
-                  href="/channels"
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors ${
-                    isChannelsActive
-                      ? 'bg-emerald-50 text-emerald-800 font-semibold dark:bg-emerald-950 dark:text-emerald-200'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                >
-                  <Layers className="h-4 w-4 text-emerald-600" />
-                  <span>{t('nav_channels') || 'Channels'}</span>
-                </Link>
-
-                {/* Instant Frictionless Report Button */}
-                <Link
-                  href="/report"
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                    pathname === '/report'
-                      ? 'bg-red-500 text-white border-red-600'
-                      : 'border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:bg-red-100'
-                  }`}
-                >
-                  <ShieldAlert className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
-                  <span>{language === 'mr' ? 'तक्रार नोंदवा' : language === 'hi' ? 'रिपोर्ट करें' : 'Report'} (1962)</span>
-                </Link>
-              </>
-            )}
+                );
+              })}
           </nav>
         </div>
 
@@ -212,13 +207,8 @@ export function Navbar() {
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/login">
-                <Button variant="outline" size="sm">
-                  {t('login_button')}
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                  {t('register_button')}
+                <Button variant="outline" size="sm" className="text-xs font-bold border-slate-300 dark:border-slate-700 hover:bg-slate-100">
+                  {t('official_portal_nav') || 'अधिकारी लॉगिन'}
                 </Button>
               </Link>
             </div>
@@ -241,18 +231,7 @@ export function Navbar() {
         <span>{t('nav_home')}</span>
       </Link>
 
-      <Link
-        href="/chatbot"
-        className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg text-[10px] transition-colors ${
-          pathname === '/chatbot'
-            ? 'text-emerald-700 dark:text-emerald-400 font-bold'
-            : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
-        }`}
-      >
-        <Bot className="h-4 w-4" />
-        <span>{t('nav_chatbot')}</span>
-      </Link>
-
+      {/* 1. Emergency 1962 Report */}
       <Link
         href="/report"
         className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg text-[10px] transition-colors ${
@@ -265,18 +244,46 @@ export function Navbar() {
         <span>{language === 'mr' ? 'तक्रार' : language === 'hi' ? 'रिपोर्ट' : 'Report'}</span>
       </Link>
 
+      {/* 2. AI Vision Lesion Scanner */}
       <Link
-        href="/heatmap"
+        href="/chatbot"
         className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg text-[10px] transition-colors ${
-          pathname === '/heatmap'
+          pathname === '/chatbot'
             ? 'text-emerald-700 dark:text-emerald-400 font-bold'
             : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
         }`}
       >
-        <MapPin className="h-4 w-4" />
+        <Bot className="h-4 w-4" />
+        <span>{language === 'mr' ? 'एआय कॅमेरा' : language === 'hi' ? 'एआई कैमरा' : 'AI Vision'}</span>
+      </Link>
+
+      {/* 3. GIS Outbreak Heatmap */}
+      <Link
+        href="/heatmap"
+        className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg text-[10px] transition-colors ${
+          pathname === '/heatmap'
+            ? 'text-blue-700 dark:text-blue-400 font-bold'
+            : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
+        }`}
+      >
+        <MapPin className="h-4 w-4 text-blue-600" />
         <span>{t('nav_heatmap')}</span>
       </Link>
 
+      {/* 4. IVR Helpline Demo */}
+      <Link
+        href="/channels"
+        className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg text-[10px] transition-colors ${
+          pathname === '/channels'
+            ? 'text-purple-700 dark:text-purple-400 font-bold'
+            : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
+        }`}
+      >
+        <Layers className="h-4 w-4 text-purple-600" />
+        <span>{language === 'mr' ? 'व्हॉईस कॉल' : language === 'hi' ? 'वॉयस कॉल' : 'IVR Demo'}</span>
+      </Link>
+
+      {/* 5. Official Dashboard / Login */}
       {user ? (
         <Link
           href="/dashboard"
@@ -299,7 +306,7 @@ export function Navbar() {
           }`}
         >
           <LogOut className="h-4 w-4 rotate-180" />
-          <span>{t('login_button')}</span>
+          <span>{language === 'mr' ? 'अधिकारी' : language === 'hi' ? 'अधिकारी' : 'Official'}</span>
         </Link>
       )}
     </nav>

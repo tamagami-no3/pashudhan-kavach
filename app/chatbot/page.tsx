@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
+import { useAuth } from '@/context/AuthContext';
 import {
   Send,
   Image as ImageIcon,
@@ -41,9 +43,9 @@ interface ChatMessage {
   timestamp: string;
 }
 
-function dataURLtoBlob(dataurl: string): Blob {
+function dataURLtoBlob(dataurl: string) {
   const arr = dataurl.split(',');
-  const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+  const mime = arr[0].match(/:(.*?);/)![1];
   const bstr = atob(arr[1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
@@ -54,7 +56,22 @@ function dataURLtoBlob(dataurl: string): Blob {
 }
 
 export default function ChatbotPage() {
-  const [language, setLanguage] = useState<'mr' | 'hi' | 'en'>('mr');
+  const { language: authLanguage, setLanguage: setAuthLanguage } = useAuth();
+  const [language, setLanguageState] = useState<'mr' | 'hi' | 'en'>(
+    (authLanguage as 'mr' | 'hi' | 'en') || 'mr'
+  );
+
+  const setLanguage = (lang: 'mr' | 'hi' | 'en') => {
+    setLanguageState(lang);
+    if (setAuthLanguage) setAuthLanguage(lang);
+  };
+
+  useEffect(() => {
+    if (authLanguage && (authLanguage === 'mr' || authLanguage === 'hi' || authLanguage === 'en')) {
+      setLanguageState(authLanguage);
+    }
+  }, [authLanguage]);
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [selectedImage, setSelectedImage] = useState<{
@@ -69,6 +86,7 @@ export default function ChatbotPage() {
 
   // Webcam capture state
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -106,92 +124,118 @@ export default function ChatbotPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // Clean up camera stream on unmount
-  useEffect(() => {
-    return () => {
-      stopCamera();
-    };
-  }, []);
-
-  // Initial welcome message per language
-  useEffect(() => {
-    if (messages.length === 0) {
-      const welcomeMap: Record<'mr' | 'hi' | 'en', ChatMessage> = {
-        mr: {
-          id: 'welcome-mr',
-          role: 'model',
-          text: 'नमस्कार! मी "पशुधन सहायक" आहे. आपल्या जनावराची लक्षणे सांगा किंवा जखम/त्वचेचा फोटो अपलोड करा किंवा थेट कॅमेऱ्याने फोटो काढा. मी प्राथमिक रोग निदान आणि आवश्यक खबरदारी सुचवीन.',
-          alert_level: 'none',
-          precautions: [
-            'लक्षणे स्पष्ट व सविस्तर लिहा.',
-            'स्पष्ट व चांगल्या प्रकाशात घेतलेला फोटो जोडा.',
-            'तातडीच्या प्रसंगी १९६२ वर कॉल करा.',
-          ],
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
-        hi: {
-          id: 'welcome-hi',
-          role: 'model',
-          text: 'नमस्ते! मैं "पशुधन सहायक" हूँ। अपने पशु के लक्षण बताएं, फोटो अपलोड करें या सीधे कैमरे से तस्वीर लें। मैं प्राथमिक रोग पहचान और सावधानियां बताऊंगा।',
-          alert_level: 'none',
-          precautions: [
-            'लक्षणों का विवरण स्पष्ट रूप से लिखें।',
-            'साफ और अच्छी रोशनी वाली तस्वीर अपलोड करें।',
-            'आपातकालीन स्थिति में 1962 पर कॉल करें।',
-          ],
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
-        en: {
-          id: 'welcome-en',
-          role: 'model',
-          text: 'Hello! I am "Pashudhan Sahayak", your AI livestock health assistant. Describe your animal\'s symptoms, upload a photo, or capture directly via camera for preliminary disease screening and precautions.',
-          alert_level: 'none',
-          precautions: [
-            'Describe visible symptoms clearly (fever, mouth blisters, skin lumps).',
-            'Upload or capture a clear, well-lit photo of the affected area.',
-            'For emergencies, call Govt Veterinary Helpline 1962 immediately.',
-          ],
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
-      };
-      setMessages([welcomeMap[language]]);
-    }
-  }, [language, messages.length]);
-
-  // --- WEBCAM STREAM CONTROLS ---
-  const startCamera = async (mode = facingMode) => {
-    setCameraError(null);
-    setIsCameraOpen(true);
-    stopCamera();
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: mode,
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-        },
-        audio: false,
-      });
-
-      cameraStreamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
-    } catch (err: any) {
-      console.warn('Camera access error:', err);
-      setCameraError('Camera access unavailable or denied. You can still attach an image file.');
-    }
-  };
-
-  const stopCamera = () => {
+  const stopTracks = () => {
     if (cameraStreamRef.current) {
       cameraStreamRef.current.getTracks().forEach((track) => track.stop());
       cameraStreamRef.current = null;
     }
-    setIsCameraOpen(false);
   };
+
+  const stopCamera = () => {
+    stopTracks();
+    setIsCameraOpen(false);
+    setCameraActive(false);
+  };
+
+  // Clean up camera stream on unmount
+  useEffect(() => {
+    return () => {
+      stopTracks();
+    };
+  }, []);
+
+  // Reactive welcome message per language
+  useEffect(() => {
+    const welcomeMap: Record<'mr' | 'hi' | 'en', ChatMessage> = {
+      mr: {
+        id: 'welcome-mr',
+        role: 'model',
+        text: 'नमस्कार! मी "पशुधन एआय व्हिजन सहायक" आहे. आपल्या जनावराची लक्षणे सांगा किंवा जखम/त्वचेचा फोटो अपलोड करा किंवा थेट कॅमेऱ्याने फोटो काढा. मी तात्काळ प्राथमिक रोग निदान व खबरदारी सुचवीन.',
+        alert_level: 'none',
+        precautions: [
+          'कॅमेऱ्याने जखम किंवा त्वचेवरील गाठींचा स्पष्ट फोटो घ्या.',
+          'लक्षणे बोलून सांगा किंवा खाली टाईप करा.',
+          'तातडीच्या गंभीर प्रसंगी शासकीय हेल्पलाइन १९६२ किंवा /report वापरा.',
+        ],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+      hi: {
+        id: 'welcome-hi',
+        role: 'model',
+        text: 'नमस्ते! मैं "पशुधन एआई विज़न सहायक" हूँ। अपने पशु के लक्षण बताएं या त्वचा/घाव की तस्वीर कैमरे से खींचें। मैं प्राथमिक रोग पहचान व आवश्यक सावधानियां बताऊंगा।',
+        alert_level: 'none',
+        precautions: [
+          'कैमरे से घाव या गांठों की साफ तस्वीर लें।',
+          'माइक से बोलकर या लिखकर लक्षण दर्ज करें।',
+          'आपातकालीन स्थिति में 1962 हेल्पलाइन या /report का उपयोग करें।',
+        ],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+      en: {
+        id: 'welcome-en',
+        role: 'model',
+        text: 'Hello! I am "Pashudhan AI Vision Assistant". Describe your animal\'s symptoms or capture a photo of the lesion/skin via camera for instant preliminary AI screening and care guidance.',
+        alert_level: 'none',
+        precautions: [
+          'Capture a clear, well-lit photo of the skin nodules or mouth/hoof lesions.',
+          'Speak or type symptoms using the mic or input box below.',
+          'For acute emergencies, call 1962 or dispatch a vet via /report immediately.',
+        ],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+    };
+
+    setMessages((prev) => {
+      if (prev.length === 0 || (prev.length === 1 && prev[0].id.startsWith('welcome-'))) {
+        return [welcomeMap[language]];
+      }
+      return prev;
+    });
+  }, [language]);
+
+  // --- WEBCAM STREAM CONTROLS ---
+  const startCamera = async (mode = facingMode) => {
+    setCameraError(null);
+    stopTracks();
+    setIsCameraOpen(true);
+
+    try {
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: mode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        });
+      } catch {
+        // Fallback for laptop webcams that don't support ideal facingMode
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+      }
+
+      cameraStreamRef.current = stream;
+      setCameraActive(true);
+    } catch (err: any) {
+      console.warn('Camera access error:', err);
+      setCameraError(
+        language === 'mr'
+          ? 'कॅमेरा सुरू करता आला नाही किंवा परवानगी नाकारली. आपण गॅलरीतून फोटो जोडू शकता.'
+          : 'Camera access unavailable or denied. You can still attach an image file.'
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (isCameraOpen && cameraStreamRef.current && videoRef.current) {
+      videoRef.current.srcObject = cameraStreamRef.current;
+      videoRef.current.play().catch((e) => console.warn('Video play error:', e));
+    }
+  }, [isCameraOpen, cameraActive]);
 
   const toggleCameraFacing = () => {
     const nextMode = facingMode === 'environment' ? 'user' : 'environment';
@@ -363,10 +407,10 @@ export default function ChatbotPage() {
 
   const labels = {
     mr: {
-      title: 'पशुधन सहायक — एआय रोग निदान चॅटबॉट',
-      subtitle: 'लक्षणे, फोटो व लाइव्ह कॅमेऱ्याद्वारे लाळ्या-खुरकूत, लंपी, अँथ्रॅक्स व इतर रोगांचे प्राथमिक विश्लेषण',
-      disclaimerTitle: 'वैद्यकीय सूचना (Medical Disclaimer)',
-      disclaimer: 'हा केवळ एआय-सहाय्यित प्राथमिक अंदाज आहे. अंतिम निदानासाठी अधिकृत पशुवैद्यकीय डॉक्टरांचा सल्ला घ्या.',
+      title: 'एआय व्हिजन आरोग्य स्कॅनर (AI Vision Health Scanner)',
+      subtitle: 'थेट कॅमेरा किंवा फोटोद्वारे लंपी (LSD), लाळ्या खुरकूत (FMD) व इतर रोगांचे तात्काळ व्हिज्युअल विश्लेषण',
+      disclaimerTitle: 'प्राथमिक व्हिज्युअल तपासणी (Preliminary Visual AI)',
+      disclaimer: 'हे प्राथमिक एआय व्हिज्युअल मॉडेल आहे, प्रयोगशाळा तपासणी नाही. गंभीर आणीबाणीसाठी तात्काळ १९६२ किंवा अधिकृत डॉक्टरांशी संपर्क साधा.',
       inputPlaceholder: 'जनावराची लक्षणे येथे लिहा (उदा. तोंडात फोड, अंगावर गाठी, ताप)...',
       send: 'पाठवा',
       uploadPhoto: 'फोटो जोडा',
@@ -377,18 +421,19 @@ export default function ChatbotPage() {
       confidence: 'अंदाज अचूकता:',
       precautionsTitle: 'महत्त्वाच्या खबरदाऱ्या व उपाय:',
       edgeSignalTitle: 'एज व्हिज्युअल सिग्नल (Pretrained MobileNet)',
-      edgeSignalDisclaimer: '* सामान्य कॉम्प्युटर व्हिजन मॉडेल आधारित व्हिज्युअल वैशिष्ट्ये. हे रोग निदान मॉडेल नाही.',
+      edgeSignalDisclaimer: '* सामान्य कॉम्प्युटर व्हिजन मॉडेल आधारित व्हिज्युअल वैशिष्ट्ये. हे प्रयोगशाळा चाचणी नाही.',
       urgentAlert: 'तातडीचा इशारा — तात्काळ विलगीकरण आवश्यक!',
       cautionAlert: 'सावधानता इशारा — लक्षणांवर बारीक लक्ष ठेवा',
       helpline: 'पशु आपत्कालीन मदत: १९६२',
       voiceInput: 'माइक द्वारे लक्षणे सांगा (Speak)',
       listening: 'बोलत रहा, ऐकत आहे... (Listening)',
+      dispatchVetBtn: 'तातडीने डॉक्टर बोलवा (१९६२)',
     },
     hi: {
-      title: 'पशुधन सहायक — एआई रोग निदान चैटबॉट',
-      subtitle: 'लक्षणों, फोटो और लाइव कैमरे द्वारा एफएमडी, लंपी, एंथ्रेक्स आदि का प्राथमिक विश्लेषण',
-      disclaimerTitle: 'चिकित्सीय सूचना (Medical Disclaimer)',
-      disclaimer: 'यह केवल एआई-सहायता प्राप्त प्रारंभिक अनुमान है। अंतिम निदान के लिए पशु चिकित्सक से संपर्क करें।',
+      title: 'एआई विज़न स्वास्थ्य स्कैनर (AI Vision Health Scanner)',
+      subtitle: 'लाइव कैमरा या फोटो द्वारा लंपी (LSD), एफएमडी (FMD) व अन्य रोगों का त्वरित विज़ुअल विश्लेषण',
+      disclaimerTitle: 'प्रारंभिक विज़ुअल जांच (Preliminary Visual AI)',
+      disclaimer: 'यह प्रारंभिक एआई विज़ुअल मॉडल है, लैब रिपोर्ट नहीं। आपात स्थिति में तत्काल 1962 पर कॉल करें।',
       inputPlaceholder: 'पशु के लक्षण यहाँ लिखें (उदा. मुंह में छाले, त्वचा पर गांठें, बुखार)...',
       send: 'भेजें',
       uploadPhoto: 'फोटो जोड़ें',
@@ -399,18 +444,19 @@ export default function ChatbotPage() {
       confidence: 'सटीकता स्तर:',
       precautionsTitle: 'जरूरी सावधानियां और उपाय:',
       edgeSignalTitle: 'एज विज़ुअल सिग्नल (Pretrained MobileNet)',
-      edgeSignalDisclaimer: '* सामान्य कंप्यूटर विजन मॉडल पर आधारित विज़ुअल विशेषताएं। यह रोग निदान मॉडल नहीं है।',
+      edgeSignalDisclaimer: '* सामान्य कंप्यूटर विजन मॉडल आधारित विज़ुअल विशेषताएं।',
       urgentAlert: 'गंभीर चेतावनी — तत्काल अलगाव आवश्यक!',
       cautionAlert: 'सावधानी — लक्षणों पर नजर रखें',
       helpline: 'पशु आपातकालीन हेल्पलाइन: 1962',
       voiceInput: 'माइक द्वारा लक्षण बोलें (Speak)',
       listening: 'बोलते रहें, सुन रहे हैं... (Listening)',
+      dispatchVetBtn: 'तुरंत डॉक्टर बुलाएं (1962)',
     },
     en: {
-      title: 'Pashudhan Sahayak — AI Disease Diagnosis Chatbot',
-      subtitle: 'Screening for FMD, LSD, Anthrax, PPR & Black Quarter via symptoms, photos & live camera',
-      disclaimerTitle: 'Medical Disclaimer',
-      disclaimer: 'This is a preliminary AI-assisted screening tool, not a certified lab diagnosis. Always consult a registered veterinarian.',
+      title: 'AI Vision Health Scanner & Care Assistant',
+      subtitle: 'Visual lesion screening for Lumpy Skin, FMD & bovine diseases via live camera & multimodal AI',
+      disclaimerTitle: 'Preliminary Visual AI Screening',
+      disclaimer: 'This is a preliminary visual AI screening tool, not certified laboratory diagnosis. In critical cases, dispatch a vet immediately.',
       inputPlaceholder: 'Describe symptoms here (e.g., mouth blisters, skin lumps, high fever)...',
       send: 'Send',
       uploadPhoto: 'Attach Photo',
@@ -421,12 +467,13 @@ export default function ChatbotPage() {
       confidence: 'Confidence:',
       precautionsTitle: 'Recommended Precautions & Care:',
       edgeSignalTitle: 'Edge Visual Signal (Pretrained MobileNet)',
-      edgeSignalDisclaimer: '* Pretrained general computer vision model for secondary edge feature cues. Not a trained disease classifier.',
+      edgeSignalDisclaimer: '* Pretrained general computer vision model for edge feature cues. Not certified lab confirmation.',
       urgentAlert: 'CRITICAL ALERT — Immediate Quarantine & Vet Intervention Required!',
       cautionAlert: 'CAUTION — Disease Symptoms Detected',
       helpline: 'Govt Animal Emergency Helpline: 1962',
       voiceInput: 'Speak symptoms via microphone',
       listening: 'Listening to symptoms (speak now)...',
+      dispatchVetBtn: 'Dispatch Field Vet (1962)',
     },
   }[language];
 
@@ -439,7 +486,7 @@ export default function ChatbotPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-emerald-600 text-white shadow-md">
-              <Bot className="h-6 w-6" />
+              <Camera className="h-6 w-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -452,32 +499,42 @@ export default function ChatbotPage() {
             </div>
           </div>
 
-          {/* Standalone Language Toggle */}
-          <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border rounded-lg p-1 shadow-sm text-xs font-semibold self-end sm:self-auto">
-            <button
-              onClick={() => setLanguage('mr')}
-              className={`px-2.5 py-1 rounded-md transition-all ${
-                language === 'mr' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              मराठी
-            </button>
-            <button
-              onClick={() => setLanguage('hi')}
-              className={`px-2.5 py-1 rounded-md transition-all ${
-                language === 'hi' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              हिंदी
-            </button>
-            <button
-              onClick={() => setLanguage('en')}
-              className={`px-2.5 py-1 rounded-md transition-all ${
-                language === 'en' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              English
-            </button>
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {/* Emergency Hotline Direct Link */}
+            <Link href="/report">
+              <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-sm h-8 px-3">
+                <ShieldAlert className="h-3.5 w-3.5 mr-1" />
+                {labels.dispatchVetBtn}
+              </Button>
+            </Link>
+
+            {/* Standalone Language Toggle */}
+            <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border rounded-lg p-1 shadow-sm text-xs font-semibold">
+              <button
+                onClick={() => setLanguage('mr')}
+                className={`px-2 py-0.5 rounded-md transition-all ${
+                  language === 'mr' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                मराठी
+              </button>
+              <button
+                onClick={() => setLanguage('hi')}
+                className={`px-2 py-0.5 rounded-md transition-all ${
+                  language === 'hi' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                हिंदी
+              </button>
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-2 py-0.5 rounded-md transition-all ${
+                  language === 'en' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                EN
+              </button>
+            </div>
           </div>
         </div>
 

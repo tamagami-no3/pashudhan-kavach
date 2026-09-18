@@ -17,10 +17,16 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = request.nextUrl;
-  const q = searchParams.get('q')?.trim();
+  const rawQ = searchParams.get('q')?.trim();
 
-  if (!q || q.length < 2) {
+  if (!rawQ || rawQ.length < 2) {
     return errorResponse('Search query "q" must be at least 2 characters', 'QUERY_TOO_SHORT', 400);
+  }
+
+  // Sanitize against PostgREST filter delimiter injection (comma, parentheses, brackets)
+  const q = rawQ.replace(/[,()\[\]]/g, '').trim();
+  if (q.length < 2) {
+    return errorResponse('Search query contains invalid characters', 'INVALID_QUERY', 400);
   }
 
   try {

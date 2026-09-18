@@ -340,6 +340,16 @@ export function calculateAllDistrictsRisk(
     } else {
       bucket = 'low';
     }
+
+    // Epidemiological Ground Truth Gate:
+    // A district with 0 active cases must never be tagged as Critical or High,
+    // regardless of background weather or minor percentile variation.
+    if (activeCaseCounts[item.index] === 0) {
+      if (bucket === 'critical' || bucket === 'high') {
+        bucket = 'low';
+      }
+    }
+
     computedBuckets.set(item.index, bucket);
   }
 

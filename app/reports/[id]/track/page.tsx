@@ -415,12 +415,15 @@ export default function CaseTrackerPage() {
                       <UserCheck className="h-6 w-6" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-base font-bold text-slate-900 dark:text-white">
                           {ticket?.assigned_vet?.name || 'डॉ. विजय शिंदे (Dr. Vijay Shinde)'}
                         </h3>
                         <Badge variant="outline" className="text-[10px] border-emerald-500 text-emerald-700">
                           {ticket?.assigned_vet?.role || 'पशुधन विकास अधिकारी (LDO)'}
+                        </Badge>
+                        <Badge variant="secondary" className="text-[10px] bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-medium">
+                          नमुना प्रात्यक्षिक (Simulated Demo)
                         </Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
@@ -432,17 +435,17 @@ export default function CaseTrackerPage() {
 
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <a
-                      href={`tel:${ticket?.assigned_vet?.phone || '+919822033333'}`}
+                      href="tel:1962"
                       className="w-full sm:w-auto"
                     >
                       <Button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">
                         <PhoneCall className="mr-1.5 h-3.5 w-3.5" />
-                        डॉक्टरांना कॉल करा
+                        १९६२ द्वारे संपर्क करा
                       </Button>
                     </a>
                     <a href="tel:1962">
                       <Button variant="outline" className="text-xs font-bold border-red-300 text-red-700 hover:bg-red-50">
-                        १९६२ हेल्पलाइन
+                        १९६२ टोल-फ्री
                       </Button>
                     </a>
                   </div>
