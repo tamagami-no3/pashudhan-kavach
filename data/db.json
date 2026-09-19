@@ -294,6 +294,23 @@
       "id": "rep-1789747444733",
       "reported_at": "2026-09-18T16:04:04.733Z",
       "created_at": "2026-09-18T16:04:04.733Z"
+    },
+    {
+      "animal_id": "anim-1789747057293",
+      "reported_by": "11111111-1111-4111-8111-111111111111",
+      "symptoms": [
+        "crackling_limb_swelling",
+        "throat_swelling"
+      ],
+      "media_urls": [
+        "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgS..."
+      ],
+      "gps_lat": 18.5204,
+      "gps_lng": 73.8567,
+      "status": "triaged",
+      "id": "rep-1789790404460",
+      "reported_at": "2026-09-19T04:00:04.460Z",
+      "created_at": "2026-09-19T04:00:04.460Z"
     }
   ],
   "outbreak_flags": [
@@ -376,6 +393,16 @@
       "risk_level": "high",
       "district": "Pune",
       "created_at": "2026-09-18T16:04:04.733Z"
+    },
+    {
+      "id": "flag-1789790404460",
+      "symptom_report_id": "rep-1789790404460",
+      "predicted_disease": "Lumpy Skin Disease (LSD)",
+      "confidence_pct": 85,
+      "severity_score": 80,
+      "risk_level": "high",
+      "district": "Pune",
+      "created_at": "2026-09-19T04:00:04.460Z"
     }
   ],
   "lab_cases": [
@@ -487,6 +514,19 @@
         }
       ],
       "created_at": "2026-09-18T16:04:04.733Z"
+    },
+    {
+      "id": "lab-1789790404460",
+      "symptom_report_id": "rep-1789790404460",
+      "sample_id": "LAB-20260919-3163",
+      "status": "collected",
+      "status_history": [
+        {
+          "status": "collected",
+          "updated_at": "2026-09-19T04:00:04.460Z"
+        }
+      ],
+      "created_at": "2026-09-19T04:00:04.460Z"
     }
   ],
   "health_records": [
@@ -796,6 +836,13 @@
       "district": "Pune",
       "summary": "इशारा: Pune भागात Foot and Mouth Disease (FMD) चे लक्षण आढळले आहेत. पशुपालकांनी दक्षता घ्यावी.",
       "created_at": "2026-09-18T16:04:04.733Z"
+    },
+    {
+      "id": "post-1789790404460",
+      "source_symptom_report_id": "rep-1789790404460",
+      "district": "Pune",
+      "summary": "इशारा: Pune भागात Lumpy Skin Disease (LSD) चे लक्षण आढळले आहेत. पशुपालकांनी दक्षता घ्यावी.",
+      "created_at": "2026-09-19T04:00:04.460Z"
     }
   ],
   "district_staff_assignments": [
@@ -828,6 +875,52 @@
     }
   ],
   "triage_tickets": [
+    {
+      "ticket_id": "PK-401008",
+      "report_id": "rep-1789790404460",
+      "status": "officer_assigned",
+      "triage": {
+        "predictedDisease": "Inconclusive / General Malaise",
+        "diseaseCode": "INCONCLUSIVE",
+        "confidencePct": 0,
+        "severityScore": 10,
+        "riskLevel": "low",
+        "matchedSymptoms": [],
+        "totalDiseaseSymptoms": 0,
+        "allDiseaseScores": [],
+        "requiresOutbreakFlag": false,
+        "requiresLabCase": false,
+        "requiresCommunityNotice": false,
+        "isolationAdvice": "Monitor animal temperature and appetite. Provide clean water and soft fodder."
+      },
+      "sla_minutes": 180,
+      "sla_deadline": "2026-09-19T07:00:04.453Z",
+      "assigned_vet": {
+        "name": "डॉ. विजय शिंदे",
+        "role": "पशुधन विकास अधिकारी (LDO)",
+        "phone": "+91 98220 33333",
+        "vehicle_no": "MH-12-GV-1962",
+        "eta_minutes": 25
+      },
+      "dispensary": {
+        "name": "शासकीय पशुवैद्यकीय दवाखाना श्रेणी १ (हवेली तालुका)",
+        "address": "Near Taluka Panchayat Office, Maharashtra",
+        "helpline": "1962",
+        "distance_km": 4.8
+      },
+      "first_aid": [
+        "आजारी जनावराला इतर निरोगी जनावरांपासून ताबडतोब वेगळ्या हवेशीर गोठ्यात ठेवा.",
+        "तोंडातील किंवा पायातील फोडांवर पोटॅशियम परमँगनेट (लाल औषध) किंवा १% बोरिक ऍसिडचा सौम्य लेप लावा.",
+        "जनावरास पिण्यासाठी स्वच्छ कोमट पाणी व पचायला हलका मऊ हिरवा चारा द्या.",
+        "गोठ्यात माश्या व डास होऊ नयेत म्हणून कडुनिंबाचा धूर करा."
+      ],
+      "tag_uid": "999900001111",
+      "symptoms": [
+        "crackling_limb_swelling",
+        "throat_swelling"
+      ],
+      "created_at": "2026-09-19T04:00:05.780Z"
+    },
     {
       "ticket_id": "PK-596744",
       "report_id": "rep-1789747444733",

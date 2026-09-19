@@ -11,6 +11,9 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     nav_registry: 'पशू नोंदणी व कार्ड',
     nav_animals: 'पशू नोंदणी',
     nav_report: 'लक्षण नोंदवा',
+    nav_report_1962: 'तातडीची मदत (1962 Report)',
+    nav_vision_scanner: 'एआय कॅमेरा स्कॅनर',
+    nav_ivr_demo: 'व्हॉईस कॉल (IVR Demo)',
     nav_heatmap: 'रोग धोका नकाशा (Heatmap)',
     nav_community: 'सार्वजनिक सूचना फलक',
     nav_lab: 'लॅब चाचणी',
@@ -205,9 +208,6 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     all_statuses: 'सर्व स्थिती',
 
     // Rebranded Navigation & Pillars
-    nav_report_1962: 'तातडीची मदत (1962 Report)',
-    nav_vision_scanner: 'एआय कॅमेरा स्कॅनर',
-    nav_ivr_demo: 'व्हॉईस कॉल (IVR Demo)',
     official_portal_nav: 'अधिकारी लॉगिन',
 
     // Rebranded Home Persona Cards
@@ -248,6 +248,9 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     nav_registry: 'पशु पंजीकरण एवं कार्ड',
     nav_animals: 'पशु पंजीकरण',
     nav_report: 'लक्षण दर्ज करें',
+    nav_report_1962: 'आपातकालीन सहायता (1962 Report)',
+    nav_vision_scanner: 'एआई कैमरा स्कैनर',
+    nav_ivr_demo: 'वॉयस कॉल (IVR Demo)',
     nav_heatmap: 'रोग जोखिम मानचित्र (Heatmap)',
     nav_community: 'सार्वजनिक सूचना बोर्ड',
     nav_lab: 'लैब जांच',
@@ -443,9 +446,6 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     all_statuses: 'सभी स्थिति',
 
     // Rebranded Navigation & Pillars
-    nav_report_1962: 'आपातकालीन सहायता (1962 Report)',
-    nav_vision_scanner: 'एआई कैमरा स्कैनर',
-    nav_ivr_demo: 'वॉयस कॉल (IVR Demo)',
     official_portal_nav: 'अधिकारी लॉगिन',
 
     // Rebranded Home Persona Cards
@@ -486,6 +486,9 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     nav_registry: 'Livestock Registry',
     nav_animals: 'Animal Registry',
     nav_report: 'Report Symptoms',
+    nav_report_1962: 'Emergency (1962 Report)',
+    nav_vision_scanner: 'AI Vision Scanner',
+    nav_ivr_demo: 'Voice Call (IVR Demo)',
     nav_heatmap: 'GIS Heatmap',
     nav_community: 'Community Feed',
     nav_lab: 'Lab Cases',
@@ -681,9 +684,6 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     all_statuses: 'All Statuses',
 
     // Rebranded Navigation & Pillars
-    nav_report_1962: 'Emergency (1962 Report)',
-    nav_vision_scanner: 'AI Vision Scanner',
-    nav_ivr_demo: 'Voice Call (IVR Demo)',
     official_portal_nav: 'Authority Login',
 
     // Rebranded Home Persona Cards

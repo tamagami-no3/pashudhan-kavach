@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import { FrictionlessReportForm } from '@/components/farmer/FrictionlessReportForm';
+import { IvrCallModal } from '@/components/ivr/IvrCallModal';
 import { useAuth } from '@/context/AuthContext';
 import {
   ShieldAlert,
@@ -22,12 +23,10 @@ export const dynamic = 'force-dynamic';
 
 export default function FrictionlessReportPage() {
   const { language, setLanguage } = useAuth();
-  const [activeLang, setActiveLang] = useState<'mr' | 'hi' | 'en'>(
-    (language as 'mr' | 'hi' | 'en') || 'mr'
-  );
+  const activeLang: 'mr' | 'hi' | 'en' = (language as 'mr' | 'hi' | 'en') || 'mr';
+  const [isIvrModalOpen, setIsIvrModalOpen] = useState(false);
 
   const handleLanguageChange = (lang: 'mr' | 'hi' | 'en') => {
-    setActiveLang(lang);
     if (setLanguage) setLanguage(lang);
   };
 
@@ -67,14 +66,30 @@ export default function FrictionlessReportPage() {
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
-            <a href="tel:1962" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto bg-white text-red-700 hover:bg-slate-100 font-bold text-xs sm:text-sm px-4 py-2 shadow-md">
-                <PhoneCall className="mr-1.5 h-4 w-4 text-red-600" />
-                {activeLang === 'mr' ? 'कॉल करा १९६२' : activeLang === 'hi' ? 'कॉल करें 1962' : 'Call 1962'}
-              </Button>
-            </a>
+            <Button
+              type="button"
+              onClick={() => setIsIvrModalOpen(true)}
+              className="w-full sm:w-auto bg-white text-red-700 hover:bg-slate-100 font-bold text-xs sm:text-sm px-4 py-2 shadow-md flex items-center gap-1.5"
+              title="Click to launch interactive 1962 IVR phone call simulator"
+            >
+              <PhoneCall className="h-4 w-4 text-red-600 animate-pulse" />
+              <span>
+                {activeLang === 'mr'
+                  ? 'कॉल करा १९६२ (Live Demo)'
+                  : activeLang === 'hi'
+                  ? 'कॉल करें 1962 (Live Demo)'
+                  : 'Call 1962 (Live Demo)'}
+              </span>
+            </Button>
           </div>
         </div>
+
+        {/* Interactive IVR Simulator Modal */}
+        <IvrCallModal
+          isOpen={isIvrModalOpen}
+          onClose={() => setIsIvrModalOpen(false)}
+          language={activeLang}
+        />
 
         {/* Informational Guidance Pills */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

@@ -66,6 +66,12 @@ export function FrictionlessReportForm({
 }: FrictionlessReportFormProps) {
   const router = useRouter();
   const [language, setLanguage] = useState<'mr' | 'hi' | 'en'>(initialLanguage);
+
+  useEffect(() => {
+    if (initialLanguage) {
+      setLanguage(initialLanguage);
+    }
+  }, [initialLanguage]);
   const [tagUid, setTagUid] = useState('999900001111');
   const [selectedSymptomIds, setSelectedSymptomIds] = useState<string[]>([]);
   const [voiceNotes, setVoiceNotes] = useState('');
