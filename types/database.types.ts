@@ -436,6 +436,90 @@ export interface Database {
           updated_at?: string;
         };
       };
+      districts: {
+        Row: {
+          id: string;
+          name: string;
+          division: string;
+          lat: number;
+          lng: number;
+          risk_override_level: RiskLevel | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          division: string;
+          lat: number;
+          lng: number;
+          risk_override_level?: RiskLevel | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          division?: string;
+          lat?: number;
+          lng?: number;
+          risk_override_level?: RiskLevel | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      district_staff_assignments: {
+        Row: {
+          id: string;
+          district_id: string;
+          user_id: string;
+          role: string;
+          assigned_at: string;
+        };
+        Insert: {
+          id?: string;
+          district_id: string;
+          user_id: string;
+          role: string;
+          assigned_at?: string;
+        };
+        Update: {
+          id?: string;
+          district_id?: string;
+          user_id?: string;
+          role?: string;
+          assigned_at?: string;
+        };
+      };
+      district_admin_actions: {
+        Row: {
+          id: string;
+          district_id: string;
+          admin_id: string;
+          action_type: 'intervention' | 'risk_override';
+          notes: string;
+          override_level: RiskLevel | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          district_id: string;
+          admin_id: string;
+          action_type: 'intervention' | 'risk_override';
+          notes: string;
+          override_level?: RiskLevel | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          district_id?: string;
+          admin_id?: string;
+          action_type?: 'intervention' | 'risk_override';
+          notes?: string;
+          override_level?: RiskLevel | null;
+          created_at?: string;
+        };
+      };
     };
   };
 }
@@ -455,4 +539,6 @@ export type Advisory = Tables<'advisories'>;
 export type NotificationLog = Tables<'notification_log'>;
 export type CommunityPost = Tables<'community_posts'>;
 export type SyncQueueItem = Tables<'sync_queue_items'>;
-
+export type District = Tables<'districts'>;
+export type DistrictStaffAssignment = Tables<'district_staff_assignments'>;
+export type DistrictAdminAction = Tables<'district_admin_actions'>;

@@ -133,19 +133,64 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            <Link href="/report-symptom">
-              <Button className="bg-red-600 hover:bg-red-700 text-white font-semibold gap-1.5 shadow-sm">
-                <ShieldAlert className="h-4 w-4" />
-                {t('report_sick_action')}
-              </Button>
-            </Link>
-            {['farmer', 'paravet', 'vet', 'admin'].includes(user?.role || '') && (
-              <Link href="/animals">
-                <Button variant="outline" className="gap-1.5 border-emerald-200 hover:bg-emerald-50 text-emerald-800 dark:text-emerald-300">
-                  <PlusCircle className="h-4 w-4 text-emerald-600" />
-                  {t('register_animal_action')}
+            {user?.role === 'farmer' && (
+              <>
+                <Link href="/report">
+                  <Button className="bg-red-600 hover:bg-red-700 text-white font-semibold gap-1.5 shadow-sm">
+                    <ShieldAlert className="h-4 w-4" />
+                    {t('report_sick_action')}
+                  </Button>
+                </Link>
+                <Link href="/animals">
+                  <Button variant="outline" className="gap-1.5 border-emerald-200 hover:bg-emerald-50 text-emerald-800 dark:text-emerald-300">
+                    <PlusCircle className="h-4 w-4 text-emerald-600" />
+                    {t('register_animal_action')}
+                  </Button>
+                </Link>
+              </>
+            )}
+
+            {['vet', 'paravet'].includes(user?.role || '') && (
+              <>
+                <Link href="/heatmap">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-1.5 shadow-sm">
+                    <MapPin className="h-4 w-4" />
+                    <span>{t('nav_heatmap') || 'रोग धोका नकाशा'}</span>
+                  </Button>
+                </Link>
+                <Link href="/analytics">
+                  <Button variant="outline" className="gap-1.5 border-emerald-200 hover:bg-emerald-50 text-emerald-800 dark:text-emerald-300">
+                    <TrendingUp className="h-4 w-4 text-emerald-600" />
+                    <span>{t('nav_analytics') || 'विश्लेषण'}</span>
+                  </Button>
+                </Link>
+              </>
+            )}
+
+            {user?.role === 'lab' && (
+              <Link href="/lab">
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold gap-1.5 shadow-sm">
+                  <FlaskConical className="h-4 w-4" />
+                  <span>{t('nav_lab') || 'लॅब व्यवस्थापन'}</span>
                 </Button>
               </Link>
+            )}
+
+            {user?.role === 'admin' && (
+              <>
+                <Link href="/heatmap">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-1.5 shadow-sm">
+                    <MapPin className="h-4 w-4" />
+                    <span>{t('nav_heatmap') || 'रोग धोका नकाशा'}</span>
+                  </Button>
+                </Link>
+                <Link href="/analytics">
+                  <Button variant="outline" className="gap-1.5 border-emerald-200 hover:bg-emerald-50 text-emerald-800 dark:text-emerald-300">
+                    <TrendingUp className="h-4 w-4 text-emerald-600" />
+                    <span>{t('nav_analytics') || 'राज्य विश्लेषण'}</span>
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
         </div>

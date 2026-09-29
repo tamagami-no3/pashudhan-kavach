@@ -1,3 +1,6 @@
+// Alert radius constant in km for spatial neighborhood and containment analysis
+export const ALERT_RADIUS_KM = 150;
+
 // 36 Maharashtra Districts locked spellings grouped by 6 administrative divisions
 export interface DistrictInfo {
   name: string;
@@ -5,6 +8,7 @@ export interface DistrictInfo {
   aliases?: string[];
   lat: number;
   lng: number;
+  risk_override_level?: 'low' | 'medium' | 'high' | 'critical' | null;
 }
 
 export const MAHARASHTRA_DIVISIONS = [

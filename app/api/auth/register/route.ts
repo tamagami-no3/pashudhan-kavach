@@ -20,7 +20,11 @@ export async function POST(request: NextRequest) {
       return validationErrorResponse('Validation failed', parsed.error.format());
     }
 
-    const { email, password, full_name, role, phone, district, preferred_language, village, block, landline } = parsed.data;
+    const { email, password, full_name, role: requestedRole, phone, district, preferred_language, village, block, landline } = parsed.data;
+
+    // Security Hardening: Public self-registration is strictly restricted to 'farmer'.
+    // Official authority roles ('admin', 'commissioner', 'ldo_vet', 'lab_technician') must be provisioned by admin.
+    const effectiveRole = 'farmer';
 
     let userId = `user-${Date.now()}`;
 
@@ -31,7 +35,7 @@ export async function POST(request: NextRequest) {
         email,
         password,
         email_confirm: true,
-        user_metadata: { full_name, role, district },
+        user_metadata: { full_name, role: effectiveRole, district },
       });
 
       if (!authError && authUser.user) {
@@ -40,7 +44,7 @@ export async function POST(request: NextRequest) {
           id: userId,
           email,
           full_name,
-          role,
+          role: effectiveRole,
           phone: phone || null,
           district,
           preferred_language,
@@ -48,7 +52,7 @@ export async function POST(request: NextRequest) {
           is_verified: true,
         });
 
-        if (role === 'farmer' && village && block) {
+        if (village && block) {
           await (admin.from('farmers') as any).insert({
             user_id: userId,
             village,
@@ -65,7 +69,7 @@ export async function POST(request: NextRequest) {
     const newUser = await addMockUser({
       email,
       full_name,
-      role: role as any,
+      role: effectiveRole as any,
       district,
       preferred_language: preferred_language as any,
       phone: phone || undefined,
@@ -80,7 +84,7 @@ export async function POST(request: NextRequest) {
         id: newUser.id,
         email,
         full_name,
-        role,
+        role: effectiveRole,
         district,
         preferred_language,
       },

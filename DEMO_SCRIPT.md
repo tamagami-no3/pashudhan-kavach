@@ -19,6 +19,20 @@ All demo accounts share the password: `DemoPassword123!`
 
 ## ⏱️ Step-by-Step Evaluator Walkthrough (5-8 Minutes)
 
+### Step 0: Frictionless Zero-Login Symptom Report & Live Case Tracker (1.5 min)
+1. Open the home page at `/`.
+2. Notice the prominent **Emergency 1962 Helpline & Frictionless Report** banner.
+3. Click **नोंदणी करा (Report Now)** → Routes directly to `/report` (zero login required).
+4. Try voice symptom recognition: click the microphone button and speak *"गाईला खूप ताप आला आहे आणि लाळ गळत आहे"* (or click symptom cards: *Fever, Drooling, Mouth Blisters*).
+5. Notice that symptoms are automatically checked based on voice input!
+6. Click **तातडीने नोंदणी करा (Submit Report)**:
+   - Observe automatic routing to `/reports/PK-XXXXXX/track`.
+   - Inspect the **4-Phase Visual Stepper**: Report Registered → Officer Assigned → Dispatched on Field with **Live Dynamic ETA Countdown Timer** (18m).
+   - View assigned Veterinary Officer card (`Dr. Vijay Shinde`, LDO, Vehicle `MH-12-GV-1962`, click-to-call link).
+   - Test offline resilience: turn off network in DevTools → submit report → observe instant saving to local IndexedDB queue and seamless redirect to `/reports/offline/track` with "Sync Now" button.
+
+---
+
 ### Step 1: Public Verification & Home Landing Page (1 min)
 1. Open the home page at `/`.
 2. Notice the **Public Verification** search box.

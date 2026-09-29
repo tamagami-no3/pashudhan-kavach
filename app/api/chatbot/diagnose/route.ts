@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export interface VisualSignal {
+  className: string;
+  probability: number;
+}
+
 interface DiagnoseRequest {
   message?: string;
   imageBase64?: string;
   imageMediaType?: string;
+  visual_signal?: VisualSignal[];
   language?: 'en' | 'hi' | 'mr';
   history?: Array<{
     role: 'user' | 'model';
@@ -17,15 +23,25 @@ interface DiagnoseResponse {
   confidence_level: 'Low' | 'Medium' | 'High' | 'Critical' | string;
   alert_level: 'none' | 'caution' | 'urgent';
   precautions: string[];
+  visual_signal?: VisualSignal[];
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: DiagnoseRequest = await request.json();
+    const candidateModels = [
+      'gemini-3.6-flash',
+      'gemini-3.5-flash',
+      'gemini-3.7-flash',
+      'gemini-3.8-flash',
+      'gemini-3.1-flash-lite',
+      'gemini-flash-latest',
+    ];
     const {
       message = '',
       imageBase64,
       imageMediaType = 'image/jpeg',
+      visual_signal,
       language = 'mr',
       history = [],
     } = body;
@@ -75,7 +91,7 @@ You MUST respond with valid JSON adhering to this exact schema:
     if (!apiKey) {
       // Fallback rule-based triage if API key is not configured
       const fallback = getRuleBasedFallback(message, language);
-      return NextResponse.json(fallback, { status: 200 });
+      return NextResponse.json({ ...fallback, visual_signal: visual_signal || [] }, { status: 200 });
     }
 
     // Build Gemini contents payload
@@ -106,6 +122,15 @@ You MUST respond with valid JSON adhering to this exact schema:
           data: cleanBase64,
         },
       });
+
+      if (visual_signal && Array.isArray(visual_signal) && visual_signal.length > 0) {
+        const signalSummary = visual_signal
+          .map((s) => `${s.className} (${Math.round((s.probability || 0) * 100)}%)`)
+          .join(', ');
+        currentParts.push({
+          text: `[Client-side Pretrained MobileNet visual inference signal: ${signalSummary}. Note: General visual feature signal only, perform full veterinary diagnosis based on clinical symptoms and lesions.]`,
+        });
+      }
     }
 
     if (currentParts.length === 0) {
@@ -126,8 +151,6 @@ You MUST respond with valid JSON adhering to this exact schema:
       parts: currentParts,
     });
 
-    const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
     const geminiPayload = {
       system_instruction: {
         parts: [{ text: systemPrompt }],
@@ -139,27 +162,36 @@ You MUST respond with valid JSON adhering to this exact schema:
       },
     };
 
-    const response = await fetch(geminiEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(geminiPayload),
-    });
+    let rawText: string | null = null;
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.warn('Gemini API call failed:', response.status, errorText);
-      const fallback = getRuleBasedFallback(message, language);
-      return NextResponse.json(fallback, { status: 200 });
+    for (const modelName of candidateModels) {
+      try {
+        const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        const response = await fetch(geminiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(geminiPayload),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawText) {
+            break;
+          }
+        } else {
+          console.warn(`Gemini model ${modelName} returned status:`, response.status);
+        }
+      } catch (modelErr) {
+        console.warn(`Error calling ${modelName}:`, modelErr);
+      }
     }
-
-    const data = await response.json();
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!rawText) {
       const fallback = getRuleBasedFallback(message, language);
-      return NextResponse.json(fallback, { status: 200 });
+      return NextResponse.json({ ...fallback, visual_signal: visual_signal || [] }, { status: 200 });
     }
 
     let parsedResult: DiagnoseResponse;
@@ -190,6 +222,7 @@ You MUST respond with valid JSON adhering to this exact schema:
       confidence_level: parsedResult.confidence_level || 'Medium',
       alert_level: parsedResult.alert_level || 'none',
       precautions: Array.isArray(parsedResult.precautions) ? parsedResult.precautions : [],
+      visual_signal: visual_signal || [],
     });
   } catch (error: any) {
     console.error('Chatbot diagnose route error:', error);

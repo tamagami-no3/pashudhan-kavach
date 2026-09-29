@@ -6,10 +6,14 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     brand_title: 'पशुधन कवच',
     brand_name: 'पशुधन कवच',
     brand_subtitle: 'महाराष्ट्र शासन - पशु आरोग्य व रोग संसर्ग डिजिटल व्यासपीठ',
+    nav_home: 'मुख्यपृष्ठ',
     nav_dashboard: 'डॅशबोर्ड',
     nav_registry: 'पशू नोंदणी व कार्ड',
     nav_animals: 'पशू नोंदणी',
     nav_report: 'लक्षण नोंदवा',
+    nav_report_1962: 'तातडीची मदत (1962 Report)',
+    nav_vision_scanner: 'एआय कॅमेरा स्कॅनर',
+    nav_ivr_demo: 'व्हॉईस कॉल (IVR Demo)',
     nav_heatmap: 'रोग धोका नकाशा (Heatmap)',
     nav_community: 'सार्वजनिक सूचना फलक',
     nav_lab: 'लॅब चाचणी',
@@ -51,10 +55,13 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     hero_desc: 'महाराष्ट्रातील ३६ जिल्ह्यांसाठी एआय-आधारित प्राथमिक निदान, क्यूआर डिजिटल हेल्थ पासपोर्ट, आणि हवामान धोका निर्देशांक.',
     verify_placeholder: '१२ अंकी पशु आधार / टॅग नंबर प्रविष्ट करा...',
     verify_button: 'टॅग तपासा',
-    verify_tag: 'टॅग तपासा',
     demo_tag_try: 'नमूना टॅग तपासा:',
     govt_badge: 'महाराष्ट्र शासन — SIH26128',
     emergency_helpline: 'पशु आरोग्य मोफत हेल्पलाइन: १९६२',
+    farmer_entry_title: 'तक्रार / लक्षण नोंदवा',
+    farmer_entry_subtitle: 'लॉगिन आवश्यक नाही • एआय द्वारे लक्षण तपासणी व रोग अंदाज',
+    authority_entry_title: 'अधिकारी लॉगिन',
+    authority_entry_subtitle: 'पशुवैद्यक, प्रयोगशाळा व राज्य अधिकारी • डॅशबोर्ड प्रवेश',
     live_registered_herd: 'एकूण नोंदणीकृत पशू',
     live_active_alerts: 'सक्रिय साथीचे इशारे',
     live_lab_tests: 'पूर्ण लॅब तपासण्या',
@@ -199,6 +206,36 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     lab_status_testing: 'चाचणी सुरू',
     lab_status_completed: 'पूर्ण झाले',
     all_statuses: 'सर्व स्थिती',
+
+    // Rebranded Navigation & Pillars
+    official_portal_nav: 'अधिकारी लॉगिन',
+
+    // Rebranded Home Persona Cards
+    farmer_hub_title: 'शेतकरी सेवा केंद्र (Farmer Hub)',
+    farmer_hub_badge: 'कोणताही लॉगिन नको • 100% मोफत',
+    farmer_hub_desc: 'तातडीची वैद्यकीय मदत बोलवा किंवा एआय कॅमेऱ्याने जनावरांच्या आजाराचे दृश्य विश्लेषण करा.',
+    btn_emergency_report: '🚨 तातडीने डॉक्टर बोलवा (1962 Report)',
+    btn_emergency_report_sub: '३० मिनिटांत फिरते रुग्णालय व पशुवैद्यक साहाय्य',
+    btn_vision_scanner: '📸 एआय कॅमेरा स्कॅनर (AI Vision)',
+    btn_vision_scanner_sub: 'जखम/त्वचेचा फोटो काढून एआय सल्ला व रोग अंदाज घ्या',
+    official_hub_title: 'शासकीय अधिकारी पोर्टल (Official Portal)',
+    official_hub_badge: 'सुरक्षित लॉगिन आवश्यक',
+    official_hub_desc: 'पशुधन विकास अधिकारी (LDO), प्रयोगशाळा तंत्रज्ञ आणि राज्य प्रशासकांसाठी डॅशबोर्ड.',
+    btn_official_login: 'अधिकारी डॅशबोर्डमध्ये प्रवेश करा',
+    btn_official_login_sub: '३६ जिल्हे नियंत्रण, लॅब चाचण्या व रोग आकडेवारी',
+
+    // Feature Grid
+    feat_passport_title: 'डिजिटल पशू आधार व हेल्थ पासपोर्ट',
+    feat_passport_desc: '१२-अंकी टॅग, डिजिटल लसीकरण नोंदवही व क्यूआर कोड सत्यता पडताळणी.',
+    feat_triage_title: 'तातडीचे रोग ट्रायज व SLA प्रणाली',
+    feat_triage_desc: 'लाळ्या-खुरकूत, लंपी, फऱ्या यांसारख्या संसर्गजन्य रोगांवर ३० मिनिटांत डॉक्टर रवाना.',
+    feat_gis_title: 'हवामान व जीआयएस प्रादुर्भाव रडार',
+    feat_gis_desc: '३६ जिल्ह्यांचा थेट रोग धोका निर्देशांक, ओपन-मेटिओ हवामान व १५० किमी प्रसार अंदाज.',
+    feat_lab_title: 'प्रयोगशाळा नमुना साखळी ट्रॅकिंग',
+    feat_lab_desc: 'नमुना संकलन ते पीसीआर/एलिसा चाचणीपर्यंत थेट डिजिटल ट्रॅकिंग.',
+
+    // Disclaimer
+    academic_disclaimer: '⚠️ शैक्षणिक व स्पर्धा प्रात्यक्षिक (Academic SIH Prototype — Synthetic Data). Not an official Government of Maharashtra portal.',
   },
 
   hi: {
@@ -206,10 +243,14 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     brand_title: 'पशुधन कवच',
     brand_name: 'पशुधन कवच',
     brand_subtitle: 'महाराष्ट्र शासन - पशु स्वास्थ्य एवं रोग निगरानी पोर्टल',
+    nav_home: 'होम',
     nav_dashboard: 'डैशबोर्ड',
     nav_registry: 'पशु पंजीकरण एवं कार्ड',
     nav_animals: 'पशु पंजीकरण',
     nav_report: 'लक्षण दर्ज करें',
+    nav_report_1962: 'आपातकालीन सहायता (1962 Report)',
+    nav_vision_scanner: 'एआई कैमरा स्कैनर',
+    nav_ivr_demo: 'वॉयस कॉल (IVR Demo)',
     nav_heatmap: 'रोग जोखिम मानचित्र (Heatmap)',
     nav_community: 'सार्वजनिक सूचना बोर्ड',
     nav_lab: 'लैब जांच',
@@ -255,6 +296,10 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     demo_tag_try: 'नमूना टैग जांचें:',
     govt_badge: 'महाराष्ट्र सरकार — SIH26128',
     emergency_helpline: 'पशु स्वास्थ्य हेल्पलाइन: 1962',
+    farmer_entry_title: 'समस्या / लक्षण दर्ज करें',
+    farmer_entry_subtitle: 'लॉगिन की आवश्यकता नहीं • एआई लक्षण जांच और रोग निदान',
+    authority_entry_title: 'अधिकारी लॉगिन',
+    authority_entry_subtitle: 'पशु चिकित्सक, लैब और राज्य अधिकारी • डैशबोर्ड लॉगिन',
     live_registered_herd: 'कुल पंजीकृत पशुधन',
     live_active_alerts: 'सक्रिय महामारी चेतावनी',
     live_lab_tests: 'पूर्ण लैब जांचें',
@@ -399,6 +444,36 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     lab_status_testing: 'जांच चल रही',
     lab_status_completed: 'पूर्ण हुई',
     all_statuses: 'सभी स्थिति',
+
+    // Rebranded Navigation & Pillars
+    official_portal_nav: 'अधिकारी लॉगिन',
+
+    // Rebranded Home Persona Cards
+    farmer_hub_title: 'किसान सेवा केंद्र (Farmer Hub)',
+    farmer_hub_badge: 'कोई लॉगिन जरूरी नहीं • 100% निःशुल्क',
+    farmer_hub_desc: 'तत्काल पशु चिकित्सक सहायता बुलाएं या एआई कैमरे से रोग का दृश्य विश्लेषण करें।',
+    btn_emergency_report: '🚨 तत्काल डॉक्टर बुलाएं (1962 Report)',
+    btn_emergency_report_sub: '30 मिनट में मोबाइल पशु अस्पताल व चिकित्सा सहायता',
+    btn_vision_scanner: '📸 एआई कैमरा स्कैनर (AI Vision)',
+    btn_vision_scanner_sub: 'घाव/त्वचा की तस्वीर खींचकर एआई सलाह एवं रोग पहचान प्राप्त करें',
+    official_hub_title: 'शासकीय अधिकारी पोर्टल (Official Portal)',
+    official_hub_badge: 'सुरक्षित लॉगिन आवश्यक',
+    official_hub_desc: 'पशु चिकित्सा अधिकारी, लैब तकनीशियन एवं राज्य प्रशासकों के लिए नियंत्रण कक्ष।',
+    btn_official_login: 'अधिकारी डैशबोर्ड में प्रवेश करें',
+    btn_official_login_sub: '36 जिले नियंत्रण, लैब टेस्ट एवं रोग आंकड़े',
+
+    // Feature Grid
+    feat_passport_title: 'डिजिटल पशु आधार एवं हेल्थ पासपोर्ट',
+    feat_passport_desc: '12-अंकीय टैग, डिजिटल टीकाकरण रजिस्टर एवं क्यूआर कोड प्रमाणिकता सत्यापन।',
+    feat_triage_title: 'तत्काल रोग ट्रायज एवं SLA प्रणाली',
+    feat_triage_desc: 'खुरपका-मुंहपका, लंपी, गलघोंटू जैसी बीमारियों पर 30 मिनट में डॉक्टर रवाना।',
+    feat_gis_title: 'मौसम एवं जीआईएस प्रादुर्भाव रडार',
+    feat_gis_desc: '36 जिलों का लाइव रोग जोखिम सूचकांक, मौसम टेलीमेट्री एवं 150 किमी प्रसार मॉडल।',
+    feat_lab_title: 'लैब नमूना कस्टडी एवं ट्रैकिंग',
+    feat_lab_desc: 'नमूना संग्रह से पीसीआर/एलिसा जांच तक संपूर्ण डिजिटल ट्रैकिंग।',
+
+    // Disclaimer
+    academic_disclaimer: '⚠️ शैक्षणिक व प्रतियोगिता प्रोटोटाइप (Academic SIH Prototype — Synthetic Data)। महाराष्ट्र शासन का आधिकारिक पोर्टल नहीं है।',
   },
 
   en: {
@@ -406,10 +481,14 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     brand_title: 'Pashudhan Kavach',
     brand_name: 'Pashudhan Kavach',
     brand_subtitle: 'Govt of Maharashtra - Livestock Health Surveillance Portal',
+    nav_home: 'Home',
     nav_dashboard: 'Dashboard',
     nav_registry: 'Livestock Registry',
     nav_animals: 'Animal Registry',
     nav_report: 'Report Symptoms',
+    nav_report_1962: 'Emergency (1962 Report)',
+    nav_vision_scanner: 'AI Vision Scanner',
+    nav_ivr_demo: 'Voice Call (IVR Demo)',
     nav_heatmap: 'GIS Heatmap',
     nav_community: 'Community Feed',
     nav_lab: 'Lab Cases',
@@ -455,6 +534,10 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     demo_tag_try: 'Try demo tag:',
     govt_badge: 'Govt of Maharashtra — SIH26128',
     emergency_helpline: 'Animal Health Toll-Free Helpline: 1962',
+    farmer_entry_title: 'Report a Problem',
+    farmer_entry_subtitle: 'No login required • AI Symptom Screening & Disease Prediction',
+    authority_entry_title: 'Authority Login',
+    authority_entry_subtitle: 'Veterinarians, Labs & State Officers • Access role-gated dashboard',
     live_registered_herd: 'Total Registered Herd',
     live_active_alerts: 'Active Surveillance Alerts',
     live_lab_tests: 'Lab Tests Completed',
@@ -599,6 +682,36 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     lab_status_testing: 'Testing',
     lab_status_completed: 'Completed',
     all_statuses: 'All Statuses',
+
+    // Rebranded Navigation & Pillars
+    official_portal_nav: 'Authority Login',
+
+    // Rebranded Home Persona Cards
+    farmer_hub_title: 'Farmer Support Center (Farmer Hub)',
+    farmer_hub_badge: 'No Login Required • 100% Free',
+    farmer_hub_desc: 'Request rapid emergency veterinary dispatch or use AI camera for visual lesion inspection.',
+    btn_emergency_report: '🚨 Call Emergency Vet (1962 Report)',
+    btn_emergency_report_sub: 'Guaranteed 30-min SLA Mobile Vet Unit dispatch',
+    btn_vision_scanner: '📸 AI Vision Scanner (Camera)',
+    btn_vision_scanner_sub: 'Capture photo of wound/skin for instant AI guidance',
+    official_hub_title: 'Official Authority Portal',
+    official_hub_badge: 'Secured Role Login Required',
+    official_hub_desc: 'Access console for Veterinary Officers (LDO), Lab Technicians, and State Administrators.',
+    btn_official_login: 'Sign In to Official Dashboard',
+    btn_official_login_sub: '36-district surveillance, lab pipeline & outbreak flags',
+
+    // Feature Grid
+    feat_passport_title: 'Digital Pashu Aadhaar & Health Passport',
+    feat_passport_desc: '12-digit UID tags with tamper-evident immunization ledger and public QR verification.',
+    feat_triage_title: 'Instant Disease Triage & SLA Dispatch',
+    feat_triage_desc: 'Deterministic screening for FMD, LSD, BQ with rapid 30-min mobile clinic dispatch.',
+    feat_gis_title: 'Climate & GIS Epidemic Radar',
+    feat_gis_desc: 'Real-time 36-district risk index correlating Open-Meteo telemetry with 150km spillover models.',
+    feat_lab_title: 'Diagnostic Lab Custody Pipeline',
+    feat_lab_desc: 'End-to-end chain of custody from field sample collection to PCR/ELISA confirmation.',
+
+    // Disclaimer
+    academic_disclaimer: '⚠️ Academic Prototype for SIH 2026 (Synthetic Demonstration Data). Not an official Government of Maharashtra notification.',
   },
 };
 
